@@ -1,0 +1,186 @@
+.checkout-section {
+  margin-top: 20px;
+}
+.checkout-section h1 {
+  font-size: 2em;
+  font-weight: 500;
+}
+.checkout-section .checkout {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.checkout-section .billing_details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.required::after {
+  content: "*";
+  color: red;
+}
+.checkout-section form > span {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  width: 100%;
+}
+.checkout-section form label {
+  opacity: 0.6;
+}
+.checkout-section form input {
+  font-family: "Poppins", sans-serif;
+  width: 400px;
+  border: none;
+  outline: none;
+  background: #e9e8e8;
+  color: rgba(0, 0, 0, 0.8);
+  padding: 8px;
+  font-size: 1em;
+}
+.checkout-section select {
+  border: none;
+  font-size: 1em;
+  padding: 13px 8px;
+  background: #e9e8e8;
+  color: rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
+.checkout-section .order_summary {
+  padding-right: 60px;
+}
+.checkout-section .order-summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-height: 250px;
+  height: auto;
+  overflow-y: scroll;
+}
+.checkout-section .order-summary-items .item {
+  width: 400px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.checkout-section .order-summary-items .item img {
+  height: 120px;
+  width: 120px;
+  object-fit: cover;
+}
+.checkout-section .order-summary-items .item a {
+  color: #000;
+}
+.checkout-section .order_summary .underline {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+.checkout-section .order_summary .total {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0px;
+}
+.checkout-section .order_summary .payment-type {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 20px;
+}
+.checkout-section .order_summary .payment-type input[type="radio"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  margin: 0;
+  font: 1em;
+  color: currentColor;
+  width: 1.5em;
+  height: 1.5em;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: grid;
+  place-content: center;
+}
+
+.checkout-section .order_summary .payment-type input[type="radio"]::before {
+  content: "";
+  width: 1.05em;
+  height: 1em;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em #000;
+}
+.checkout-section
+  .order_summary
+  .payment-type
+  input[type="radio"]:checked::before {
+  transform: scale(1);
+}
+
+.checkout-section button {
+  font-family: "Poppins", sans-serif;
+  width: 200px;
+  padding: 10px;
+  border: none;
+  color: #fff;
+  background-color: transparent;
+  font-size: 1em;
+  cursor: pointer;
+  outline: 2px solid var(--primary-color);
+  text-decoration: none;
+  position: relative;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  transition: all 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.checkout-section button:hover {
+  color: #000;
+  outline: 2px solid #000;
+}
+.checkout-section button:focus {
+  outline: 2px solid #000;
+}
+.checkout-section button::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(1, 1);
+  transform-origin: left center;
+  z-index: -1;
+  transition: transform 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  background-color: var(--primary-color);
+}
+.checkout-section button:hover::before {
+  transform-origin: right center;
+  transform: scale(0, 1);
+}
+
+@media (max-width: 600px) {
+  .checkout-section {
+    margin-top: 0;
+  }
+  .checkout-section .checkout {
+    gap: 40px;
+  }
+  .checkout-section form input {
+    width: auto;
+  }
+  .checkout-section .billing_details {
+    width: 100%;
+  }
+  .checkout-section .order-summary-items .item {
+    width: 100%;
+  }
+  .checkout-section .order_summary {
+    padding: 0;
+    width: 100%;
+  }
+}

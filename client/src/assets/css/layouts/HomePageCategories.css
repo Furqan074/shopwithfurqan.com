@@ -1,0 +1,108 @@
+.home-page-categories {
+  width: 200px;
+  height: 354px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 20px;
+}
+.home-page-categories ul {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.home-page-categories li {
+  list-style: none;
+  position: relative;
+}
+.home-page-categories ul > li {
+  color: #000;
+  font-weight: 500;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.home-page-categories li a {
+  color: #000;
+  transition: all 0.1s ease-in;
+}
+.home-page-categories li a:hover {
+  opacity: 0.8;
+}
+.home-page-categories li > ul {
+  position: absolute;
+  right: -220px;
+  z-index: 50;
+  top: -20px;
+  padding: 0px 35px;
+  align-items: center;
+  background-color: transparent;
+  display: none;
+}
+.home-page-categories li > ul > div {
+  width: 140px;
+  padding: 10px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 10px;
+}
+.home-page-categories li:hover ul {
+  display: block;
+}
+.home-page-categories li ul:hover {
+  display: block;
+}
+.home-page-categories li ul > a {
+  font-weight: 500;
+}
+/* For mobile */
+.home-page-categories-mobile {
+  width: 100%;
+  overflow: hidden;
+}
+.home-page-categories-mobile .swiper-slide {
+  width: fit-content !important;
+  border: 2px solid #000;
+  border-radius: 20px;
+  font-size: 0.8em;
+  padding: 0px 8px;
+}
+.home-page-categories-mobile .swiper-slide:nth-child(1) {
+  margin-left: 35px;
+}
+.home-page-categories-mobile a {
+  color: #000;
+  font-weight: 500;
+}
+.home-page-categories-mobile .swiper-button-prev,
+.home-page-categories-mobile .swiper-button-next {
+  color: #000 !important;
+  font-weight: bolder !important;
+}
+.home-page-categories-mobile .swiper-button-next {
+  right: -6px !important;
+  background: var(--body-bg);
+  width: 40px;
+}
+.home-page-categories-mobile .swiper-button-prev {
+  width: 40px;
+  left: -6px !important;
+  background: var(--body-bg);
+}
+.home-page-categories-mobile .swiper-button-prev::after,
+.home-page-categories-mobile .swiper-button-next::after {
+  font-size: 20px !important;
+}
+.home-page-categories-mobile .swiper-button-prev.swiper-button-disabled {
+  opacity: 1;
+}
+.home-page-categories-mobile .swiper-button-next.swiper-button-disabled {
+  opacity: 1;
+}
+
+/* styling for tablets */
+@media only screen and (min-width: 700px) and (max-width: 1023px) {
+  .home-page-categories ul {
+    gap: 0;
+  }
+}

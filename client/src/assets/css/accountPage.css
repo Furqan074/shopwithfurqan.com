@@ -1,0 +1,257 @@
+.account-section {
+  margin-top: 20px;
+}
+.account-section h1 {
+  text-transform: capitalize;
+  font-weight: 500;
+  font-size: 1.8em;
+}
+.account-section h1 span {
+  color: var(--primary-color);
+}
+.account-section .user-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 20px;
+  padding-right: 60px;
+}
+.account-section .user-nav h2 {
+  font-weight: 500;
+  font-size: 1.1em;
+}
+.account-section .user-nav {
+  width: 600px;
+  height: 650px;
+}
+.account-section .user-nav span {
+  margin-top: 10px;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  text-transform: capitalize;
+  gap: 2px;
+}
+.account-section .user-nav span a {
+  color: rgb(0, 0, 0, 0.5);
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+  width: fit-content;
+}
+.account-section .user-nav span a:hover {
+  color: rgb(0, 0, 0, 0.8);
+}
+.account-section .user-nav span a.active {
+  color: var(--primary-color);
+}
+
+.account-section .edit-user-info {
+  width: 100%;
+}
+.account-section .edit-user-info h2 {
+  color: var(--primary-color);
+  font-weight: 500;
+  font-size: 1.3em;
+}
+.account-section .edit-user-info form {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.account-section .edit-user-info .input-wrapper_1 {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.account-section .edit-user-info .input-wrapper_2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+.account-section .edit-user-info .input-wrapper_2 > div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+.account-section .edit-user-info .input-wrapper_2 > span {
+  width: 100%;
+}
+.account-section .edit-user-info .input-wrapper_3 > span {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+.account-section .edit-user-info form > div span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: space-between;
+  width: 350px;
+}
+.account-section .edit-user-info form > div span input {
+  font-family: "Poppins", sans-serif;
+  border: none;
+  outline: none;
+  background: #e9e8e8;
+  color: rgba(0, 0, 0, 0.8);
+  padding: 8px 8px;
+  font-size: 1em;
+  letter-spacing: 1px;
+}
+.account-section .edit-user-info button {
+  font-family: "Poppins", sans-serif;
+  padding: 10px;
+  float: right;
+  border: none;
+  color: #fff;
+  background-color: transparent;
+  font-size: 1em;
+  cursor: pointer;
+  outline: 2px solid var(--primary-color);
+  text-decoration: none;
+  position: relative;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  transition: all 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+.account-section .edit-user-info button:hover {
+  color: #000;
+  outline: 2px solid #000;
+}
+.account-section .edit-user-info button:focus {
+  outline: 2px solid #000;
+}
+.account-section .edit-user-info button::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(1, 1);
+  transform-origin: left center;
+  z-index: -1;
+  transition: transform 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  background-color: var(--primary-color);
+}
+.account-section .edit-user-info button:hover::before {
+  transform-origin: right center;
+  transform: scale(0, 1);
+}
+.popup-wrapper {
+  box-shadow: 4px 4px 10px -10px rgba(0, 0, 0, 1);
+  width: 400px;
+  position: fixed;
+  margin: 0 auto;
+  top: -100px;
+  opacity: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.5s ease;
+}
+.popup-wrapper.active {
+  top: 25%;
+  opacity: 1;
+}
+.popup {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  border-radius: 4px;
+  padding: 5px;
+  font-weight: 300;
+}
+.popup svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.popup-icon svg {
+  margin: 5px;
+  display: flex;
+  align-items: center;
+}
+.close-icon {
+  margin-left: auto;
+}
+.close-icon:hover {
+  outline: 1px solid rgb(0, 0, 0, 0.5);
+}
+.close-svg {
+  cursor: pointer;
+}
+.close-path {
+  fill: grey;
+}
+
+/* SUCCESS */
+.success-popup {
+  background-color: #edfbd8;
+  border: solid 1px #84d65a;
+}
+.success-icon path {
+  fill: #84d65a;
+}
+.success-message {
+  color: #2b641e;
+}
+
+/* ALERT */
+.alert-popup {
+  background-color: #fefce8;
+  border: solid 1px #facc15;
+}
+.alert-icon path {
+  fill: #facc15;
+}
+.alert-message {
+  color: #ca8a04;
+}
+
+/* ERROR */
+
+.error-popup {
+  background-color: #fef2f2;
+  border: solid 1px #f87171;
+}
+.error-icon path {
+  fill: #f87171;
+}
+.error-message {
+  color: #991b1b;
+}
+
+@media (max-width: 600px) {
+  .account-section {
+    margin-top: 0;
+    padding: 0px 10px;
+  }
+  .account-section .user-info {
+    padding: 0;
+  }
+  .account-section .user-nav {
+    display: none;
+  }
+  .account-section .edit-user-info form span {
+    width: 100%;
+  }
+  .popup-wrapper {
+    width: 95%;
+    position: fixed;
+    top: 60px;
+    left: 8px;
+    transform: none;
+    margin: 0;
+  }
+  .popup-wrapper.active {
+    top: 125px;
+    opacity: 1;
+  }
+}

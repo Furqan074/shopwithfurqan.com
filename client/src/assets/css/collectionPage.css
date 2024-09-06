@@ -1,0 +1,259 @@
+.collection-page-section {
+  margin-top: 20px;
+  border-top: 1px solid rgb(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.collection-page-left-side {
+  margin-top: 17px;
+  width: 200px;
+  padding-right: 46px;
+  box-shadow: 6px 0px 3px -2px rgba(0, 0, 0, 0.05);
+}
+.collection-page-left-side h1 {
+  padding-bottom: 10px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+.collection-page-left-side h2 {
+  padding-top: 18px;
+  padding-bottom: 5px;
+  font-size: 1em;
+  font-weight: 400;
+  color: rgb(0, 0, 0, 0.6);
+}
+.collection-page-left-side .line {
+  border-top: 1px solid rgb(0, 0, 0, 0.5);
+}
+.collection-page-left-side .filter-group {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.collection-page-left-side .filter-group > div {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  color: rgb(0, 0, 0, 0.6);
+  text-transform: capitalize;
+}
+.collection-page-left-side .filter-group > a {
+  color: rgb(0, 0, 0, 0.6);
+  text-transform: capitalize;
+}
+.collection-page-left-side .filter-group > a:hover {
+  color: rgb(0, 0, 0, 1);
+}
+.collection-page-left-side .filter-group > div label {
+  cursor: pointer;
+}
+.collection-page-left-side .filter-group > div input {
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+}
+.collection-page-left-side .filter-group-price {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.collection-page-left-side .filter-group-price input {
+  border: 1px solid rgb(0, 0, 0, 0.6);
+  border-radius: 4px;
+  width: 40px;
+  padding: 5px;
+}
+.collection-page-left-side .filter-group-price button {
+  border: none;
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 7px 10px;
+  border-radius: 4px;
+  width: auto;
+  cursor: pointer;
+}
+.collection-page-left-side .filter-group-price button:hover {
+  opacity: 0.8;
+}
+.collection-page-left-side
+  .filter-group-price
+  input[type="number"]::-webkit-inner-spin-button,
+.collection-page-left-side
+  .filter-group-price
+  input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.collection-page-left-side .filter-group-price input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: none;
+}
+.collection-page-left-side .filter-group-stars {
+  margin-top: 10px;
+}
+.collection-page-left-side .filter-group-stars a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(0, 0, 0, 0.6);
+}
+.collection-page-left-side .filter-group-stars .rating-stars label:before {
+  font-size: 30px;
+}
+.collection-page-left-side .filter-group-stars .active {
+  border-radius: 4px;
+  background-color: rgba(219, 68, 68, 0.4);
+}
+
+.collection-page-right-side {
+  display: flex;
+  flex-direction: column;
+  width: 910px;
+}
+.collection-page-right-side .product-row .product-card {
+  flex-grow: 1;
+  width: 220px;
+}
+
+.collection-page-filter-top {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 500;
+  border-bottom: 1px solid rgb(0, 0, 0, 0.5);
+  flex-wrap: wrap;
+}
+.collection-page-filter-top .results-found {
+  text-align: center;
+  flex-grow: 1;
+}
+.collection-page-filter-top .results-found span {
+  color: var(--primary-color);
+}
+.collection-page-filter-top .filter-top-sort {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.collection-page-filter-top .filter-top-sort > div {
+  position: relative;
+  border: 1px solid var(--primary-color);
+  height: 32px;
+  width: 150px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-around;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.collection-page-filter-top .filter-top-sort > div:hover {
+  background-color: var(--primary-color);
+}
+.collection-page-filter-top .filter-top-sort .sort-dropdown {
+  position: absolute;
+  top: 100%;
+  z-index: 100;
+  width: 90%;
+  padding-top: 8px;
+  background: transparent;
+  visibility: hidden;
+  display: none;
+  opacity: 0;
+  transition: all 0.3s ease-in;
+  text-align: center;
+}
+.collection-page-filter-top .filter-top-sort .sort-dropdown > div {
+  border-radius: 4px;
+  padding: 2px 0px;
+  background: #fff;
+}
+.collection-page-filter-top .filter-top-sort > div:hover > .sort-dropdown {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+.filter-top-sort .filter-top-sort:hover > .sort-dropdown {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+.collection-page-filter-top .filter-top-sort .sort-dropdown a {
+  display: block;
+  color: #000;
+  padding: 5px 0;
+}
+.collection-page-filter-top .filter-top-sort .sort-dropdown a:hover {
+  opacity: 0.7;
+}
+.collection-page-filter-top .filter-top-view {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.collection-page-filter-top .filter-top-view svg {
+  fill: #000;
+  cursor: pointer;
+}
+.collection-page-filter-top .filter-top-view svg:hover {
+  fill: var(--primary-color);
+}
+.collection-page-filter-top .filter-top-view .active {
+  fill: var(--primary-color);
+}
+.collection-page-filter-top .filter-top-view svg:last-child {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .collection-page-section {
+    margin-top: 0;
+  }
+  .collection-page-left-side {
+    margin: 0;
+    padding: 16px;
+    overflow: scroll;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 400;
+    background-color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out,
+      visibility 0.1s;
+  }
+  .collection-page-left-side.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+  .collection-page-filter-top {
+    padding-bottom: 20px;
+  }
+  .collection-page-filter-top .filter-top-sort {
+    gap: 5px;
+  }
+  .collection-page-filter-top .filter-top-sort > div {
+    width: 100px;
+    font-size: 0.8em;
+  }
+  .collection-page-filter-top .filter-top-view {
+    gap: 5px;
+  }
+  .collection-page-filter-top .filter-top-view svg:last-child {
+    display: block;
+  }
+}
+
+@media only screen and (min-width: 700px) and (max-width: 1023px) {
+}
