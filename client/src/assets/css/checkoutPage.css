@@ -110,7 +110,7 @@
 .checkout-section .order_summary .payment-type input[type="radio"]::before {
   content: "";
   width: 1.05em;
-  height: 1em;
+  height: 1.05em;
   border-radius: 50%;
   transform: scale(0);
   transition: 120ms transform ease-in-out;
