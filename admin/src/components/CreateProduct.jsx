@@ -31,9 +31,9 @@ function CreateProduct() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [base64EncodedImages, setBase64EncodedImages] = useState("");
   const [name, setName] = useState("");
-  const [name_bn, setName_bn] = useState("");
+  const [name_ur, setName_ur] = useState("");
   const [material, setMaterial] = useState("");
-  const [material_bn, setMaterial_bn] = useState("");
+  const [material_ur, setMaterial_ur] = useState("");
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState("");
   const [ribbon, setRibbon] = useState("");
@@ -45,7 +45,7 @@ function CreateProduct() {
   const [collection, setCollection] = useState("");
   const [allCategories, setAllCategories] = useState([]);
   const [description, setDescription] = useState("");
-  const [description_bn, setDescription_bn] = useState("");
+  const [description_ur, setDescription_ur] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -118,6 +118,22 @@ function CreateProduct() {
     setBase64EncodedImages(newBase64EncodedImages);
   };
 
+  const moveImage = (index, direction) => {
+    const newSelectedImages = [...selectedImages];
+    const newBase64EncodedImages = [...base64EncodedImages];
+
+    const [movedImage] = newSelectedImages.splice(index, 1);
+    const [movedBase64] = newBase64EncodedImages.splice(index, 1);
+
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+
+    newSelectedImages.splice(newIndex, 0, movedImage);
+    newBase64EncodedImages.splice(newIndex, 0, movedBase64);
+
+    setSelectedImages(newSelectedImages);
+    setBase64EncodedImages(newBase64EncodedImages);
+  };
+
   const handleCreateProduct = async (event) => {
     const adminToken = cookies.get("adminToken");
     event.preventDefault();
@@ -134,9 +150,9 @@ function CreateProduct() {
           body: JSON.stringify({
             name: name.trim(),
             images: base64EncodedImages,
-            name_bn,
+            name_ur,
             material,
-            material_bn,
+            material_ur,
             brand,
             price,
             ribbon,
@@ -147,7 +163,7 @@ function CreateProduct() {
             listedSection,
             collection,
             description,
-            description_bn,
+            description_ur,
           }),
         }
       );
@@ -225,6 +241,25 @@ function CreateProduct() {
                   >
                     <XIcon />
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => moveImage(index, "up")}
+                    disabled={index === 0}
+                    className="absolute bottom-1 left-1 bg-gray-300 text-black p-1 rounded-full"
+                  >
+                    <ArrowUpIcon />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveImage(index, "down")}
+                    disabled={index === selectedImages.length - 1}
+                    style={{
+                      opacity: index === selectedImages.length - 1 ? 0.3 : 1,
+                    }}
+                    className="absolute bottom-1 right-1 bg-gray-300 text-black p-1 rounded-full"
+                  >
+                    <ArrowDownIcon />
+                  </button>
                 </div>
               ))}
             </div>
@@ -260,15 +295,21 @@ function CreateProduct() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="price">Price</Label>
-              <Input
-                id="price"
-                type="number"
-                placeholder="Enter Product Price"
-                min={1}
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
+              <div className="flex flex-row">
+                <span className="bg-slate-300 flex justify-center items-center px-1 text-2xl">
+                  ₨
+                </span>
+                <Input
+                  className="rounded-l-none border-l-0"
+                  id="price"
+                  type="number"
+                  placeholder="Enter Product Price"
+                  min={1}
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label>Ribbon</Label>
@@ -294,14 +335,20 @@ function CreateProduct() {
             {ribbon === "sale" && (
               <div className="grid gap-2">
                 <Label htmlFor="discountedPrice">Discounted Price</Label>
-                <Input
-                  id="discountedPrice"
-                  type="number"
-                  placeholder="Enter Discounted Price"
-                  value={discountedPrice}
-                  onChange={(e) => setDiscountedPrice(e.target.value)}
-                  required={ribbon === "sale"}
-                />
+                <div className="flex flex-row">
+                  <span className="bg-slate-300 flex justify-center items-center px-1 text-2xl">
+                    ₨
+                  </span>
+                  <Input
+                    className="rounded-l-none border-l-0"
+                    id="discountedPrice"
+                    type="number"
+                    placeholder="Enter Discounted Price"
+                    value={discountedPrice}
+                    onChange={(e) => setDiscountedPrice(e.target.value)}
+                    required={ribbon === "sale"}
+                  />
+                </div>
               </div>
             )}
             <div className="grid gap-2">
@@ -398,31 +445,31 @@ function CreateProduct() {
         <CardContent className="grid gap-4">
           <div className="grid sm:grid-flow-col gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="name_bn">Product Name UR</Label>
+              <Label htmlFor="name_ur">Product Name UR</Label>
               <Input
-                id="name_bn"
+                id="name_ur"
                 placeholder="Enter Product name in UR"
-                value={name_bn}
-                onChange={(e) => setName_bn(e.target.value)}
+                value={name_ur}
+                onChange={(e) => setName_ur(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="material_bn">Material UR</Label>
+              <Label htmlFor="material_ur">Material UR</Label>
               <Input
-                id="material_bn"
+                id="material_ur"
                 placeholder="Enter Material in UR"
-                value={material_bn}
-                onChange={(e) => setMaterial_bn(e.target.value)}
+                value={material_ur}
+                onChange={(e) => setMaterial_ur(e.target.value)}
               />
             </div>
           </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="description_bn">Description Bn</Label>
+            <Label htmlFor="description_ur">Description Ur</Label>
             <Textarea
-              placeholder="Enter Product Description in Bn."
-              id="description_bn"
-              value={description_bn}
-              onChange={(e) => setDescription_bn(e.target.value)}
+              placeholder="Enter Product Description in Ur."
+              id="description_ur"
+              value={description_ur}
+              onChange={(e) => setDescription_ur(e.target.value)}
             />
           </div>
         </CardContent>

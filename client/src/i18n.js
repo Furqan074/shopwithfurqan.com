@@ -33,7 +33,7 @@ i18n
           size: "Size",
           in_stock: "in stock",
           out_stock: "out of stock",
-          reviews: "Reviews",
+          reviews: "Review",
           Free_Delivery_label: "Free Delivery",
           Ratings_Reviews: "Ratings & Reviews",
           Top_Rated: "Top Rated",

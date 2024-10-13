@@ -212,6 +212,16 @@ section {
   justify-content: space-between;
   flex-wrap: wrap;
 }
+.search-results {
+  overflow-y: scroll;
+  height: 400px;
+  position: absolute;
+  background-color: #fff;
+  padding: 20px 40px;
+}
+.search-results .product-row .product-card {
+  flex-grow: 1;
+}
 
 .explore-products-section {
   margin-top: 40px;

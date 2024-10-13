@@ -113,10 +113,10 @@
   font-size: 0.8em;
 }
 .product-page-section .product-details .product-sizes .size:hover {
-  background: var(--primary-color);
+  background: rgb(0, 0, 0, 0.6);
 }
 .product-page-section .product-details .product-sizes .sizes .selected {
-  background: var(--primary-color);
+  background: rgb(0, 0, 0, 0.6);
 }
 .product-page-section .product-details .product-counter {
   background: transparent;
@@ -142,7 +142,7 @@
   align-items: center;
 }
 .product-page-section .product-details .product-counter .qty:hover {
-  background: var(--primary-color);
+  background: rgb(0, 0, 0, 0.4);
 }
 .product-page-section .product-details .product-counter input {
   font-family: "Poppins", sans-serif;

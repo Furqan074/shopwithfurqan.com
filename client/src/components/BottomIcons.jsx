@@ -59,6 +59,7 @@ function BottomIcons() {
           </svg>
         </div>
       )}
+      {/* TODO create a chatbot maybe with help of socket js  */}
       <div className="bottom-chat" ref={chatContainerRef}>
         <input className="checkbox" type="checkbox" ref={checkboxRef} />
         <span className="button-menu">
