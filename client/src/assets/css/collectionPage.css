@@ -155,7 +155,7 @@
   cursor: pointer;
 }
 .collection-page-filter-top .filter-top-sort > div:hover {
-  background-color: rgb(0, 0, 0, 0.6);
+  background-color: var(--primary-color);
 }
 .collection-page-filter-top .filter-top-sort .sort-dropdown {
   position: absolute;

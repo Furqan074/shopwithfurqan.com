@@ -16,18 +16,18 @@ function Header() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const { t, i18n } = useTranslation();
 
   const closeSearch = () => {
     setSearchTerm("");
     fetchSuggestions("");
-    setProducts([]);
+    setSuggestions([]);
   };
   const fetchSuggestions = useCallback(
     debounce(async (query) => {
       if (!query) {
-        setProducts([]);
+        setSuggestions([]);
         return;
       }
       try {
@@ -35,9 +35,9 @@ function Header() {
           `${import.meta.env.VITE_BACKEND_URL}/search?query=${query}`
         );
         const data = await response.json();
-        setProducts(data.results);
+        setSuggestions(data.results);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching suggestions:", error);
       }
     }, 300),
     []
@@ -205,18 +205,18 @@ function Header() {
           </li>
         </ul>
       </nav>
-      {products.length > 0 ? (
+      {suggestions.length > 0 ? (
         <div className="search-results">
           <div
             style={{
               borderBottom: "1px solid rgba(0,0,0,0.6)",
             }}
           >
-            Results: {products.length}
+            Results: {suggestions.length}
           </div>
-          <ProductRow products={products} />
+          <ProductRow products={suggestions} />
         </div>
-      ) : searchTerm && products.length === 0 ? (
+      ) : searchTerm && suggestions.length === 0 ? (
         <div
           style={{
             textAlign: "center",

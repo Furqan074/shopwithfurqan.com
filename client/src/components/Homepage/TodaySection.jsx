@@ -43,22 +43,11 @@ function TodaySection({ products }) {
       );
       const data = await response.json();
       if (data.success) {
-        const { isActive, title, endDate } = data.flashsale[0] || {};
-        setIsActive(endDate > new Date());
-        setSaleHeading(title);
+        setIsActive(data.flashsale[0]?.isActive);
+        setSaleHeading(data.flashsale[0]?.title);
+        const endDate = data?.flashsale[0]?.endDate;
         const initialCountdown = calculateTimeRemaining(endDate);
         setCountdown(initialCountdown);
-
-        // Save data to local storage
-        localStorage.setItem(
-          "flashSaleData",
-          JSON.stringify({
-            isActive,
-            title,
-            endDate,
-            timestamp: new Date().getTime(), // current timestamp
-          })
-        );
       }
     } catch (error) {
       console.error("Error fetching flash sale data:", error);
@@ -66,58 +55,13 @@ function TodaySection({ products }) {
   }, []);
 
   useEffect(() => {
-    if (isActive) {
-      // Get data from local storage
-      const storedData = localStorage.getItem("flashSaleData");
-      const currentTime = new Date().getTime();
-
-      if (storedData) {
-        const { isActive, title, endDate, timestamp } = JSON.parse(storedData);
-        const isDataFresh = currentTime - timestamp < 60000; // 60 seconds cache duration
-
-        if (isDataFresh) {
-          // Use data from local storage if it's fresh
-          setIsActive(isActive);
-          setSaleHeading(title);
-          const initialCountdown = calculateTimeRemaining(endDate);
-          setCountdown(initialCountdown);
-        } else {
-          // Data is stale, fetch new data from server
-          getFlashSale();
-        }
-      } else {
-        // No data in local storage, fetch from server
-        getFlashSale();
-      }
-
-      // Update countdown every second
-      const timer = setInterval(() => {
-        const storedData = localStorage.getItem("flashSaleData");
-        const currentTime = new Date().getTime();
-
-        if (storedData) {
-          const { endDate } = JSON.parse(storedData);
-          const newCountdown = calculateTimeRemaining(endDate);
-          setCountdown(newCountdown);
-
-          // Fetch new data if the countdown is zero or if the data is stale
-          const isDataStale =
-            currentTime - JSON.parse(storedData).timestamp >= 60000;
-          if (
-            (newCountdown.days === 0 &&
-              newCountdown.hours === 0 &&
-              newCountdown.minutes === 0 &&
-              newCountdown.seconds === 0) ||
-            isDataStale
-          ) {
-            getFlashSale();
-          }
-        }
-      }, 1000);
-
-      return () => clearInterval(timer);
-    }
-  }, [getFlashSale, isActive]);
+    getFlashSale();
+    const timer = setInterval(() => {
+      getFlashSale();
+    }, 1000);
+    // TODO fix the api calling (call it once save the data in the local storage and then compare it with current time)
+    return () => clearInterval(timer);
+  }, [getFlashSale]);
 
   return (
     <>

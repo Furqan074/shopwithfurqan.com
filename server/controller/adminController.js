@@ -145,24 +145,24 @@ const split_sub_categories = (sub_categories) => {
   return [];
 };
 
-const fix_subCategories = (en_sub_categories, ur_sub_categories) => {
-  let difference_length = en_sub_categories.length - ur_sub_categories.length;
+const fix_subCategories = (en_sub_categories, bn_sub_categories) => {
+  let difference_length = en_sub_categories.length - bn_sub_categories.length;
 
   if (difference_length > 0) {
     const additionalCategories = en_sub_categories.slice(
       en_sub_categories.length - difference_length
     );
-    ur_sub_categories.push(...additionalCategories);
+    bn_sub_categories.push(...additionalCategories);
   }
 
-  return ur_sub_categories;
+  return bn_sub_categories;
 };
 
 export const createCategory = async (req, res) => {
   try {
-    const { name, name_ur, image, sub_categories, sub_categories_ur } =
+    const { name, name_bn, image, sub_categories, sub_categories_bn } =
       req.body;
-
+    
     if (!name || !image) {
       return res.status(400).json({
         success: false,
@@ -171,7 +171,7 @@ export const createCategory = async (req, res) => {
     }
 
     const existingCategory = await Categories.findOne({ Name: name });
-    const existingCategoryBn = await Categories.findOne({ NameInBn: name_ur });
+    const existingCategoryBn = await Categories.findOne({ NameInBn: name_bn });
 
     if (existingCategory) {
       return res.status(403).json({
@@ -182,16 +182,16 @@ export const createCategory = async (req, res) => {
     if (existingCategoryBn) {
       return res.status(403).json({
         success: false,
-        message: "Category Name in Ur already exists",
+        message: "Category Name in Bn already exists",
       });
     }
 
     const en_sub_categories = split_sub_categories(sub_categories);
-    const ur_sub_categories = split_sub_categories(sub_categories_ur);
+    const bn_sub_categories = split_sub_categories(sub_categories_bn);
 
     const fixed_sub_categories = fix_subCategories(
       en_sub_categories,
-      ur_sub_categories
+      bn_sub_categories
     );
 
     const uploadResponse = await cloudinary.uploader.upload(image, {
@@ -214,7 +214,7 @@ export const createCategory = async (req, res) => {
       Name: name,
       Image: url,
       ImageId: uploadResponse.public_id,
-      NameInBn: name_ur || name,
+      NameInBn: name_bn || name,
       SubCategories: en_sub_categories,
       SubCategoriesInBn: fixed_sub_categories,
     });
@@ -239,7 +239,7 @@ export const createCategory = async (req, res) => {
 // Update Category
 export const updateCategory = async (req, res) => {
   try {
-    const { name, name_ur, image, sub_categories, sub_categories_ur } =
+    const { name, name_bn, image, sub_categories, sub_categories_bn } =
       req.body;
     const id = req.params.id;
 
@@ -258,19 +258,19 @@ export const updateCategory = async (req, res) => {
         message: "Category Name already exists",
       });
     }
-    if (name_ur === categoryFound.NameInBn) {
+    if (name_bn === categoryFound.NameInBn) {
       return res.status(403).json({
         success: false,
-        message: "Category Name in Ur already exists",
+        message: "Category Name in Bn already exists",
       });
     }
 
     const en_sub_categories = split_sub_categories(sub_categories);
-    const ur_sub_categories = split_sub_categories(sub_categories_ur);
+    const bn_sub_categories = split_sub_categories(sub_categories_bn);
 
     const fixed_sub_categories = fix_subCategories(
       en_sub_categories,
-      ur_sub_categories
+      bn_sub_categories
     );
 
     let uploadResponse = null;
@@ -285,7 +285,7 @@ export const updateCategory = async (req, res) => {
     }
 
     categoryFound.Name = name || categoryFound.Name;
-    categoryFound.NameInBn = name_ur || categoryFound.NameInBn;
+    categoryFound.NameInBn = name_bn || categoryFound.NameInBn;
     categoryFound.SubCategories =
       en_sub_categories || categoryFound.SubCategories;
     categoryFound.SubCategories =
@@ -540,10 +540,10 @@ export const createProduct = async (req, res) => {
   try {
     const {
       name,
-      name_ur,
+      name_bn,
       images,
       material,
-      material_ur,
+      material_bn,
       brand,
       price,
       discountedPrice,
@@ -554,32 +554,18 @@ export const createProduct = async (req, res) => {
       listedSection,
       collection,
       description,
-      description_ur,
+      description_bn,
     } = req.body;
 
-    const requiredFields = [
-      "name",
-      "images",
-      "price",
-      "material",
-      "listedSection",
-      "collection",
-      "description",
-    ];
-
-    const missingFields = requiredFields.filter((field) => !req.body[field]);
-
-    if (missingFields.length > 0) {
+    if (!name || !images || !material) {
       return res.status(400).json({
         success: false,
-        message: `The following fields are required: ${missingFields.join(
-          ", "
-        )}.`,
+        message: "Name, Material and Images are required",
       });
     }
 
     const existingProduct = await Products.findOne({ Name: name });
-    const existingProductBn = await Products.findOne({ NameInBn: name_ur });
+    const existingProductBn = await Products.findOne({ NameInBn: name_bn });
 
     if (existingProduct) {
       return res.status(403).json({
@@ -590,7 +576,7 @@ export const createProduct = async (req, res) => {
     if (existingProductBn) {
       return res.status(403).json({
         success: false,
-        message: "Product Name in Ur already exists",
+        message: "Product Name in Bn already exists",
       });
     }
 
@@ -601,11 +587,11 @@ export const createProduct = async (req, res) => {
 
     const newProduct = new Products({
       Name: name,
-      NameInBn: name_ur || name,
+      NameInBn: name_bn || name,
       Images: imageUrls,
       ImageIds: imageIds,
       Material: material,
-      MaterialInBn: material_ur || material,
+      MaterialInBn: material_bn || material,
       Brand: brand,
       Price: price,
       Ribbon: ribbon,
@@ -617,7 +603,7 @@ export const createProduct = async (req, res) => {
       ListedSection: listedSection,
       Collection: collection,
       Description: description,
-      DescriptionInBn: description_ur || description,
+      DescriptionInBn: description_bn || description,
     });
 
     await newProduct.save();
@@ -652,10 +638,10 @@ export const updateProduct = async (req, res) => {
   try {
     const {
       name,
-      name_ur,
+      name_bn,
       images,
       material,
-      material_ur,
+      material_bn,
       brand,
       price,
       discountedPrice,
@@ -666,7 +652,7 @@ export const updateProduct = async (req, res) => {
       listedSection,
       collection,
       description,
-      description_ur,
+      description_bn,
       reviewText,
       reviewStars,
       reviewerName,
@@ -683,7 +669,7 @@ export const updateProduct = async (req, res) => {
     }
 
     const existingProduct = await Products.findOne({ Name: name });
-    const existingProductBn = await Products.findOne({ NameInBn: name_ur });
+    const existingProductBn = await Products.findOne({ NameInBn: name_bn });
 
     if (existingProduct) {
       return res.status(403).json({
@@ -694,7 +680,7 @@ export const updateProduct = async (req, res) => {
     if (existingProductBn) {
       return res.status(403).json({
         success: false,
-        message: "Product Name in Ur already exists",
+        message: "Product Name in Bn already exists",
       });
     }
 
@@ -708,9 +694,9 @@ export const updateProduct = async (req, res) => {
     }
 
     productFound.Name = name || productFound.Name;
-    productFound.NameInBn = name_ur || productFound.NameInBn;
+    productFound.NameInBn = name_bn || productFound.NameInBn;
     productFound.Material = material || productFound.Material;
-    productFound.MaterialInBn = material_ur || productFound.MaterialInBn;
+    productFound.MaterialInBn = material_bn || productFound.MaterialInBn;
     productFound.Brand = brand || productFound.Brand;
     productFound.Price = price || productFound.Price;
     productFound.Ribbon = ribbon || productFound.Ribbon;
@@ -720,17 +706,15 @@ export const updateProduct = async (req, res) => {
       Math.ceil((discountedPrice / price) * 100) ||
       productFound.DiscountPercentage;
     productFound.Stock = stock || productFound.Stock;
-    productFound.Colors = colors
-      ? colors?.split(",").map((item) => item.trim())
-      : productFound.Colors;
-    productFound.Sizes = sizes
-      ? sizes?.split(",").map((item) => item.trim())
-      : productFound.Sizes;
+    productFound.Colors =
+      colors?.split(",").map((item) => item.trim()) || productFound.Colors;
+    productFound.Sizes =
+      sizes?.split(",").map((item) => item.trim()) || productFound.Sizes;
     productFound.ListedSection = listedSection || productFound.ListedSection;
     productFound.Collection = collection || productFound.Collection;
     productFound.Description = description || productFound.Description;
     productFound.DescriptionInBn =
-      description_ur || productFound.DescriptionInBn;
+      description_bn || productFound.DescriptionInBn;
     if (reviewStars && reviewText && reviewerName) {
       productFound.Reviews.push({
         Rating: reviewStars,

@@ -37,9 +37,9 @@ function UpdateProduct() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [base64EncodedImages, setBase64EncodedImages] = useState("");
   const [name, setName] = useState("");
-  const [name_ur, setName_ur] = useState("");
+  const [name_bn, setName_bn] = useState("");
   const [material, setMaterial] = useState("");
-  const [material_ur, setMaterial_ur] = useState("");
+  const [material_bn, setMaterial_bn] = useState("");
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState("");
   const [ribbon, setRibbon] = useState("");
@@ -51,7 +51,7 @@ function UpdateProduct() {
   const [collection, setCollection] = useState("");
   const [allCategories, setAllCategories] = useState([]);
   const [description, setDescription] = useState("");
-  const [description_ur, setDescription_ur] = useState("");
+  const [description_bn, setDescription_bn] = useState("");
   const [reviewText, setReviewText] = useState("");
   const [reviewerName, setReviewerName] = useState("");
   const [reviewStars, setReviewStars] = useState("");
@@ -147,22 +147,6 @@ function UpdateProduct() {
     setBase64EncodedImages(newBase64EncodedImages);
   };
 
-  const moveImage = (index, direction) => {
-    const newSelectedImages = [...selectedImages];
-    const newBase64EncodedImages = [...base64EncodedImages];
-
-    const [movedImage] = newSelectedImages.splice(index, 1);
-    const [movedBase64] = newBase64EncodedImages.splice(index, 1);
-
-    const newIndex = direction === "up" ? index - 1 : index + 1;
-
-    newSelectedImages.splice(newIndex, 0, movedImage);
-    newBase64EncodedImages.splice(newIndex, 0, movedBase64);
-
-    setSelectedImages(newSelectedImages);
-    setBase64EncodedImages(newBase64EncodedImages);
-  };
-
   const handleUpdateProduct = async (event) => {
     const adminToken = cookies.get("adminToken");
     event.preventDefault();
@@ -179,9 +163,9 @@ function UpdateProduct() {
           body: JSON.stringify({
             name: name.trim(),
             images: base64EncodedImages,
-            name_ur,
+            name_bn,
             material,
-            material_ur,
+            material_bn,
             brand,
             price,
             ribbon,
@@ -192,7 +176,7 @@ function UpdateProduct() {
             listedSection,
             collection: collection || null,
             description,
-            description_ur,
+            description_bn,
             reviewText,
             reviewStars,
             reviewerName,
@@ -312,25 +296,6 @@ function UpdateProduct() {
                     className="absolute flex items-center justify-center top-1 right-1 bg-red-500 text-white p-1 rounded-full"
                   >
                     <XIcon />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveImage(index, "up")}
-                    disabled={index === 0}
-                    className="absolute bottom-1 left-1 bg-gray-300 text-black p-1 rounded-full"
-                  >
-                    <ArrowUpIcon />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveImage(index, "down")}
-                    disabled={index === selectedImages.length - 1}
-                    style={{
-                      opacity: index === selectedImages.length - 1 ? 0.3 : 1,
-                    }}
-                    className="absolute bottom-1 right-1 bg-gray-300 text-black p-1 rounded-full"
-                  >
-                    <ArrowDownIcon />
                   </button>
                 </div>
               ))}
@@ -499,31 +464,31 @@ function UpdateProduct() {
         <CardContent className="grid gap-4">
           <div className="grid sm:grid-flow-col gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="name_ur">Product Name UR</Label>
+              <Label htmlFor="name_bn">Product Name UR</Label>
               <Input
-                id="name_ur"
+                id="name_bn"
                 placeholder="Enter Product name in UR"
-                value={name_ur}
-                onChange={(e) => setName_ur(e.target.value)}
+                value={name_bn}
+                onChange={(e) => setName_bn(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="material_ur">Material UR</Label>
+              <Label htmlFor="material_bn">Material UR</Label>
               <Input
-                id="material_ur"
+                id="material_bn"
                 placeholder="Enter Material in UR"
-                value={material_ur}
-                onChange={(e) => setMaterial_ur(e.target.value)}
+                value={material_bn}
+                onChange={(e) => setMaterial_bn(e.target.value)}
               />
             </div>
           </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="description_ur">Description Bn</Label>
+            <Label htmlFor="description_bn">Description Bn</Label>
             <Textarea
               placeholder="Enter Product Description in Bn."
-              id="description_ur"
-              value={description_ur}
-              onChange={(e) => setDescription_ur(e.target.value)}
+              id="description_bn"
+              value={description_bn}
+              onChange={(e) => setDescription_bn(e.target.value)}
             />
           </div>
         </CardContent>

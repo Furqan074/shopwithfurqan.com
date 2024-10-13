@@ -231,13 +231,13 @@ function Checkout() {
                   {item?.productName}
                 </Link>
                 <span>{item?.productQty}</span>
-                <span>PKR {item?.productPrice}</span>
+                <span>PKR  {item?.productPrice}</span>
               </div>
             ))}
           </div>
           <div className="underline">
             <span>{t("subtotal")}:</span>
-            <span>PKR {totalPrice}</span>
+            <span>PKR  {totalPrice}</span>
           </div>
           <div className="underline">
             <span>{t("shipping")}:</span>
@@ -245,9 +245,8 @@ function Checkout() {
           </div>
           <div className="total">
             <span>{t("total")}:</span>
-            <span>PKR {totalPrice}</span>
+            <span>PKR  {totalPrice}</span>
           </div>
-          {/* TODO add Stripe */}
           <div className="payment-type">
             <input type="radio" id="COD" defaultChecked />
             <label htmlFor="COD">{t("COD")}</label>

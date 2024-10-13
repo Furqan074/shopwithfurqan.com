@@ -69,12 +69,12 @@ function ProductPage() {
   };
 
   const handleAddToCartItem = () => {
-    if (!selectedColor && product?.Sizes?.[0] !== "") {
+    if (!selectedColor) {
       setColorWarning("Please Select a Color");
       setSizeWarning("");
       return;
     }
-    if (!selectedSize && product?.Colors?.[0] !== "") {
+    if (!selectedSize) {
       setSizeWarning("Please Select a Size");
       setColorWarning("");
       return;
@@ -101,12 +101,12 @@ function ProductPage() {
     openCart();
   };
   const handleBuyNowItem = () => {
-    if (!selectedColor && product?.Sizes?.[0] !== "") {
+    if (!selectedColor) {
       setColorWarning("Please Select a Color");
       setSizeWarning("");
       return;
     }
-    if (!selectedSize && product?.Colors?.[0] !== "") {
+    if (!selectedSize) {
       setSizeWarning("Please Select a Size");
       setColorWarning("");
       return;
@@ -210,10 +210,10 @@ function ProductPage() {
           </div>
           <div className="product-price">
             <span className="product-discounted-price">
-              PKR {product.DiscountedPrice || product.Price}
+              PKR  {product.DiscountedPrice || product.Price}
             </span>
             {product.DiscountedPrice > 0 && (
-              <span className="product-actual-price">PKR {product.Price}</span>
+              <span className="product-actual-price">PKR  {product.Price}</span>
             )}
           </div>
           <div className="product-desc">
