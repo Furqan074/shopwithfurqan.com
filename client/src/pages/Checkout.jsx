@@ -20,9 +20,10 @@ function Checkout() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isUser = cookies.get("token");
-  document.title = `${t("checkout")} | shopwithfurqan`;
+  document.title = `${t("checkout")} | Shopwithfurqan`;
   const [checkoutProducts, setCheckoutProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [shippingFee, setShippingFee] = useState(0);
   const [firstName, setFirstName] = useState(
     isUser?.customerName?.split(" ")[0]
   );
@@ -48,7 +49,7 @@ function Checkout() {
             name: `${firstName} ${lastName}`.trim(),
             email: email.trim(),
             phone,
-            address: `${address.trim()}, ${apartment}, ${city}, Bangladesh`,
+            address: `${address.trim()}, ${apartment}, ${city}, Pakistan`,
             items: checkoutProducts,
           }),
           credentials: "include",
@@ -84,18 +85,21 @@ function Checkout() {
     const checkoutItemsArray = Object.keys(allCookies)
       .filter((key) => key.startsWith("cart"))
       .map((key) => allCookies[key]);
-    const buyNowItem = cookies.get("buyNow");
-    if (checkoutItemsArray.length === 0) {
-      checkoutItemsArray.push(buyNowItem);
-    }
     setCheckoutProducts(checkoutItemsArray);
   };
 
   const calculateTotalPrice = (items) => {
+    let shipping = 0;
     const total = items.reduce((acc, item) => {
-      return acc + item?.productPrice * item?.productQty; // TODO if shipping then add + item.productShippingFee here or maybe create a better logic like if any of the product has a shipping fee then add that other wise remain it "free".
+      item.productShippingFee > 0 ? (shipping = item.productShippingFee) : 0;
+      setShippingFee(shipping);
+      return acc + item?.productPrice * item?.productQty;
     }, 0);
-    setTotalPrice(total);
+    if (total > 3000) {
+      shipping = 0;
+      setShippingFee(0);
+    }
+    setTotalPrice(total + shipping);
   };
 
   useEffect(() => {
@@ -222,10 +226,18 @@ function Checkout() {
             {checkoutProducts?.map((item) => (
               <div className="item" key={item?.productName}>
                 <Link to={`/products/${item?.productName}`}>
-                  <img
-                    src={item?.productImage}
-                    alt={`${item?.productName} Image`}
-                  />
+                  {item?.productMedia.includes("video") && (
+                    <video autoPlay loop muted>
+                      <source src={item?.productMedia} />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                  {item?.productMedia.includes("image") && (
+                    <img
+                      src={item?.productMedia}
+                      alt={`${item?.productName} Image`}
+                    />
+                  )}
                 </Link>{" "}
                 <Link to={`/products/${item?.productName}`}>
                   {item?.productName}
@@ -237,17 +249,16 @@ function Checkout() {
           </div>
           <div className="underline">
             <span>{t("subtotal")}:</span>
-            <span>PKR {totalPrice}</span>
+            <span>PKR {totalPrice - shippingFee}</span>
           </div>
           <div className="underline">
             <span>{t("shipping")}:</span>
-            <span>Free</span>
+            <span>{shippingFee ? `PKR ${shippingFee}` : "Free"}</span>
           </div>
           <div className="total">
             <span>{t("total")}:</span>
             <span>PKR {totalPrice}</span>
           </div>
-          {/* TODO add Stripe */}
           <div className="payment-type">
             <input type="radio" id="COD" defaultChecked />
             <label htmlFor="COD">{t("COD")}</label>

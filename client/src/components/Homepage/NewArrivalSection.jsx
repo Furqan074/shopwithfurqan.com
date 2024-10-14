@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 function NewArrivalSection({ products }) {
   const { t } = useTranslation();
@@ -16,26 +17,70 @@ function NewArrivalSection({ products }) {
       </div>
       <div className="section-body">
         <div className="first-column">
-          <a href={products[0].Name}>
-            <img src={products[0].Images} alt={products[0].Name} />
-          </a>
+          <Link to={`/products/${products[0].Name}`}>
+            {products[0].Media[0].mediaType === "video" && (
+              <video autoPlay loop muted>
+                <source src={products[0].Media[0].source} />
+                Your browser does not support the video tag.
+              </video>
+            )}
+            {products[0].Media[0].mediaType === "image" && (
+              <img
+                src={products[0].Media[0].source}
+                alt={`${products[0].Name} Image`}
+              />
+            )}
+          </Link>
         </div>
         <div className="second-column">
           <div className="row1-col2">
-            <a href={products[1].Name}>
-              <img src={products[1].Images} alt={products[1].Name} />
-            </a>
+            <Link to={`/products/${products[1].Name}`}>
+              {products[1].Media[0].mediaType === "video" && (
+                <video autoPlay loop muted>
+                  <source src={products[1].Media[0].source} />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+              {products[1].Media[0].mediaType === "image" && (
+                <img
+                  src={products[1].Media[0].source}
+                  alt={`${products[1].Name} Image`}
+                />
+              )}{" "}
+            </Link>
           </div>
           <div className="row2-columns">
             <div className="row2-col2">
-              <a href={products[2].Name}>
-                <img src={products[2].Images} alt={products[2].Name} />
-              </a>
+              <Link to={`/products/${products[2].Name}`}>
+                {products[2].Media[0].mediaType === "video" && (
+                  <video autoPlay loop muted>
+                    <source src={products[2].Media[0].source} />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                {products[2].Media[0].mediaType === "image" && (
+                  <img
+                    src={products[2].Media[0].source}
+                    alt={`${products[2].Name} Image`}
+                  />
+                )}{" "}
+              </Link>
             </div>
             <div className="row2-col3">
-              <a href={products[3].Name}>
-                <img src={products[3].Images} alt={products[3].Name} />
-              </a>
+              <Link to={`/products/${products[3].Name}`}>
+                {products[3].Media[0].mediaType === "video" && (
+                  <video autoPlay loop muted>
+                    <source src={products[3].Media[0].source} />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                {products[3].Media[0].mediaType === "image" && (
+                  <img
+                    src={products[3].Media[0].source}
+                    alt={`${products[3].Name} Image`}
+                  />
+                )}{" "}
+              </Link>
             </div>
           </div>
         </div>

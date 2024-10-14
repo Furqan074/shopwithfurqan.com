@@ -9,7 +9,7 @@ const cookies = new Cookies();
 
 function ProductCard({ product }) {
   const { t } = useTranslation();
-  const [image, setImage] = useState(product.Images[0]);
+  const [media, setMedia] = useState(product?.Media[0]?.source);
   const { openCart } = useContext(CartContext);
   const { setWishCount } = useContext(WishlistContext);
   const [isHovered, setIsHovered] = useState(false);
@@ -22,7 +22,7 @@ function ProductCard({ product }) {
     const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     const productDetails = {
       name: product.Name,
-      image: product.Images[0],
+      media: product.Media[0]?.source,
       price: product.Price,
       discountedPrice: product.DiscountedPrice || null,
     };
@@ -50,7 +50,7 @@ function ProductCard({ product }) {
       "cart" + product.Name,
       {
         productName: product.Name,
-        productImage: product.Images[0],
+        productMedia: product.Media[0]?.source,
         productPrice: product.Price,
         productQty: 1,
       },
@@ -67,13 +67,13 @@ function ProductCard({ product }) {
   return (
     <div className="product-card">
       <div
-        className="product-card-image"
+        className="product-card-media"
         onMouseOver={() => {
-          setImage(product.Images[1] || product.Images[0]);
+          setMedia(product.Media[1]?.source || product.Media[0]?.source);
           setIsHovered(true);
         }}
         onMouseOut={() => {
-          setImage(product.Images[0]);
+          setMedia(product.Media[0]?.source);
           setIsHovered(false);
         }}
       >
@@ -86,7 +86,14 @@ function ProductCard({ product }) {
           <span className="product-card-ribbon new">{t("ribbon_new")}</span>
         )}
         <Link to={`/products/${product.Name}`}>
-          <img src={image} alt={product.Name} />
+          {media?.includes("video") ? (
+            <video autoPlay loop muted>
+              <source src={media} />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img src={media} alt={`${product.Name} Image`} />
+          )}
         </Link>
         <span
           className="product-card-heart-icon"
@@ -120,10 +127,10 @@ function ProductCard({ product }) {
         </div>
         <div className="product-card-prices">
           <div className="product-card-current-price">
-            PKR  {product.DiscountedPrice || product.Price}
+            PKR {product.DiscountedPrice || product.Price}
           </div>
-          {product.DiscountedPrice && (
-            <div className="product-card-previous-price">PKR  {product.Price}</div>
+          {product.DiscountedPrice > 0 && (
+            <div className="product-card-previous-price">PKR {product.Price}</div>
           )}
         </div>
         {product?.RatingQty > 0 && (

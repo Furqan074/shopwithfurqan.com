@@ -32,7 +32,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 export default function CustomersTable() {
-  document.title = "Customers | shopwithfurqan";
+  document.title = "Customers | Shopwithfurqan";
   const [allCustomers, setAllCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const { toast } = useToast();

@@ -9,16 +9,19 @@ import ThisMonthSection from "../components/Homepage/ThisMonthSection.jsx";
 import NewArrivalSection from "../components/Homepage/NewArrivalSection.jsx";
 import ExploreProductsSection from "../components/Homepage/ExploreProductsSection.jsx";
 import WhyUsSection from "../components/Homepage/WhyUsSection.jsx";
+import Loading from "../components/Loading.jsx";
 
 function HomePage() {
-  document.title = "Shopwithfurqan | Make Your Life Easy";
+  document.title = "Shopwithfurqan | Meet Your Needs Here";
   const [categories, setCategories] = useState([]);
   const [todaySectionProducts, setTodaySectionProducts] = useState([]);
   const [newArrivalProducts, setNewArrivalProducts] = useState([]);
   const [exploreProducts, setExploreProducts] = useState([]);
   const [bestSellingProducts, steBestSellingProducts] = useState([]);
+  const [isLoading, setLoading] = useState(false);
 
   const getAllCategories = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/admin/categories`
@@ -26,16 +29,20 @@ function HomePage() {
       const data = await response.json();
       if (data.success) {
         setCategories(data.allCategories);
+        setLoading(false);
       } else {
         setCategories([]);
       }
     } catch (error) {
       console.error("Error Getting Homepage Categories:", error);
       setCategories([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
   const getAllProducts = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/admin/products`
@@ -47,6 +54,7 @@ function HomePage() {
         steBestSellingProducts(data.BestSellingProducts);
         setExploreProducts(data.ExploreProducts);
         setNewArrivalProducts(data.NewArrivalProducts);
+        setLoading(false);
       } else {
         setTodaySectionProducts([]);
         steBestSellingProducts([]);
@@ -59,6 +67,8 @@ function HomePage() {
       steBestSellingProducts([]);
       setExploreProducts([]);
       setNewArrivalProducts([]);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -77,6 +87,7 @@ function HomePage() {
           ))}
         <Banner />
       </section>
+      {isLoading && <Loading />}
       {todaySectionProducts.length > 0 && (
         <TodaySection products={todaySectionProducts} />
       )}

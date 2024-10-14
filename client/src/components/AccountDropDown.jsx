@@ -5,15 +5,16 @@ import { useTranslation } from "react-i18next";
 
 function AccountDropDown() {
   const { t } = useTranslation();
+  const DOMAIN = import.meta.env.VITE_DOMAIN;
   const token = cookies.get("token");
   const handleLogOut = async () => {
     try {
       cookies.remove("token", {
-        domain: import.meta.env.MODE === "production" ? "shopwithfurqan.com" : "",
+        domain: import.meta.env.MODE === "production" ? DOMAIN : "",
         path: "/",
       });
     } catch (error) {
-      console.log("error during logout", error);
+      console.error("error during logout", error);
     } finally {
       window.location.href = "/";
     }

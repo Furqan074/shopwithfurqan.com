@@ -1,5 +1,5 @@
 import ProductRow from "../components/ProductRow";
-import ImageSlider from "../components/ProductPage/ImageSlider";
+import MediaSlider from "../components/ProductPage/MediaSlider";
 import ReviewsSection from "../components/ProductPage/ReviewsSection";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import { useState, useEffect, useCallback, useContext } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { WishlistContext } from "../contexts/WishlistContext";
 import Cookies from "universal-cookie";
+import Loading from "../components/Loading";
+import PageNotFound from "../pages/PageNotFound.jsx";
 const cookies = new Cookies();
 
 const capitalizeWords = (str) => {
@@ -21,7 +23,7 @@ function ProductPage() {
   const { name } = useParams();
   const navigate = useNavigate();
   const capitalizedName = capitalizeWords(name || "");
-  document.title = capitalizedName + " | shopwithfurqan";
+  document.title = capitalizedName + " | Shopwithfurqan";
   const { openCart } = useContext(CartContext);
   const { setWishCount } = useContext(WishlistContext);
   const { t, i18n } = useTranslation();
@@ -29,16 +31,20 @@ function ProductPage() {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+  const [selectedShipping, setSelectedShipping] = useState("");
   const [productQty, setProductQty] = useState(1);
   const [colorWarning, setColorWarning] = useState("");
   const [sizeWarning, setSizeWarning] = useState("");
+  const [shippingWarning, setShippingWarning] = useState("");
   const [heart, setHeartFill] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [productNotFound, setProductNotFound] = useState(false);
 
   const handleWishlistToggle = () => {
     const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
     const productDetails = {
       name: product.Name,
-      image: product.Images[0],
+      media: product.Media[0].source,
       price: product.Price,
       discountedPrice: product.DiscountedPrice || null,
     };
@@ -69,27 +75,37 @@ function ProductPage() {
   };
 
   const handleAddToCartItem = () => {
-    if (!selectedColor && product?.Sizes?.[0] !== "") {
+    if (!selectedColor && product?.Colors?.[0] !== "") {
       setColorWarning("Please Select a Color");
       setSizeWarning("");
+      setShippingWarning("");
       return;
     }
-    if (!selectedSize && product?.Colors?.[0] !== "") {
+    if (!selectedSize && product?.Sizes?.[0] !== "") {
       setSizeWarning("Please Select a Size");
       setColorWarning("");
+      setShippingWarning("");
+      return;
+    }
+    if (!selectedShipping && product?.Shipping === "true") {
+      setShippingWarning("Please Select a Shipping fee");
+      setColorWarning("");
+      setSizeWarning("");
       return;
     }
     setSizeWarning("");
     setColorWarning("");
+    setShippingWarning("");
     cookies.set(
       "cart" + product.Name,
       {
         productName: product.Name,
-        productImage: product.Images[0],
-        productPrice: product.Price,
+        productMedia: product.Media[0].source,
+        productPrice: product?.DiscountedPrice || product.Price,
         productQty: productQty,
         productSize: selectedSize,
         productColor: selectedColor,
+        productShippingFee: Number(selectedShipping),
       },
       {
         maxAge: 172800, // 2 days
@@ -101,27 +117,37 @@ function ProductPage() {
     openCart();
   };
   const handleBuyNowItem = () => {
-    if (!selectedColor && product?.Sizes?.[0] !== "") {
+    if (!selectedColor && product?.Colors?.[0] !== "") {
       setColorWarning("Please Select a Color");
       setSizeWarning("");
+      setShippingWarning("");
       return;
     }
-    if (!selectedSize && product?.Colors?.[0] !== "") {
+    if (!selectedSize && product?.Sizes?.[0] !== "") {
       setSizeWarning("Please Select a Size");
       setColorWarning("");
+      setShippingWarning("");
+      return;
+    }
+    if (!selectedShipping && product?.Shipping === "true") {
+      setShippingWarning("Please Select a Shipping fee");
+      setColorWarning("");
+      setSizeWarning("");
       return;
     }
     setSizeWarning("");
     setColorWarning("");
+    setShippingWarning("");
     cookies.set(
-      "buyNow",
+      "cart" + product.Name,
       {
         productName: product.Name,
-        productImage: product.Images[0],
-        productPrice: product.Price,
+        productMedia: product.Media[0].source,
+        productPrice: product?.DiscountedPrice || product.Price,
         productQty: productQty,
         productSize: selectedSize,
         productColor: selectedColor,
+        productShippingFee: Number(selectedShipping),
       },
       {
         maxAge: 172800, // 2 days
@@ -130,6 +156,7 @@ function ProductPage() {
         path: "/",
       }
     );
+    openCart();
     navigate("/checkout");
   };
 
@@ -142,6 +169,7 @@ function ProductPage() {
   };
 
   const getProduct = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/products/${name}`
@@ -151,10 +179,13 @@ function ProductPage() {
       if (data.success) {
         setProduct(data.productFound);
         setRelatedProducts(data.relatedProductsFound);
-        setHeartFill(() => {
-          const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-          return wishlist.some((item) => item.name === product.Name);
-        });
+
+        const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+        setHeartFill(
+          wishlist.some((item) => item.name === data.productFound.Name)
+        );
+      } else if (response.status === 404) {
+        setProductNotFound(true);
       } else {
         setProduct([]);
         setRelatedProducts([]);
@@ -162,23 +193,29 @@ function ProductPage() {
       }
     } catch (error) {
       console.error("Error Getting Products:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [name, product.Name]);
+  }, [name]);
 
   useEffect(() => {
     getProduct();
   }, [getProduct]);
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : productNotFound ? (
+    <PageNotFound />
+  ) : (
     <section className="product-page-section">
       <div className="product-block">
-        <div className="product-images-gallery">
-          <ImageSlider images={product.Images} />
+        <div className="product-medias-gallery">
+          <MediaSlider medias={product.Media} />
         </div>
         <div className="product-details">
-          <h1>{i18n.language === "ur" ? product.NameInBn : product.Name}</h1>
+          <h1>{i18n.language === "ur" ? product.NameInUr : product.Name}</h1>
           <h2>
-            {i18n.language === "ur" ? product.MaterialInBn : product.Material}
+            {i18n.language === "ur" ? product.MaterialInUr : product.Material}
           </h2>
           <div className="product-rating">
             {product?.AverageRating > 0 && (
@@ -219,14 +256,14 @@ function ProductPage() {
           <div className="product-desc">
             <span>
               {i18n.language === "ur"
-                ? product.DescriptionInBn
+                ? product.DescriptionInUr
                 : product.Description}
             </span>
           </div>
           <span className="divider"></span>
           {product?.Colors?.[0] !== "" && (
             <div className="product-colors">
-              <div>{t("color")}:</div>
+              <div className="color-label">{t("color")}:</div>
               <div className="colors">
                 {product?.Colors?.map((color, index) => (
                   <span
@@ -235,8 +272,9 @@ function ProductPage() {
                       color === selectedColor ? "selected" : ""
                     }`}
                     onClick={() => setSelectedColor(color)}
-                    style={{ backgroundColor: color }}
-                  ></span>
+                  >
+                    {color}
+                  </span>
                 ))}
               </div>
             </div>
@@ -244,7 +282,7 @@ function ProductPage() {
           {colorWarning && <span style={{ color: "red" }}>{colorWarning}</span>}
           {product?.Sizes?.[0] !== "" && (
             <div className="product-sizes">
-              <div>{t("size")}:</div>
+              <div className="size-label">{t("size")}:</div>
               <div className="sizes">
                 {product?.Sizes?.map((size, index) => (
                   <span
@@ -310,33 +348,145 @@ function ProductPage() {
               </svg>
             </button>
           </div>
-          <div className="product-cart-concern">
-            <button className="add-to-cart-btn" onClick={handleAddToCartItem}>
-              {t("Add_To_Cart")}
-            </button>
-            <button className="buy-now-btn" onClick={handleBuyNowItem}>
-              {t("Buy_Now")}
-            </button>
-            <button className="add-wish-btn" onClick={handleWishlistToggle}>
-              <svg
-                width="22"
-                height="20"
-                viewBox="0 0 22 20"
-                fill={heart ? "#000" : "none"}
-                xmlns="http://www.w3.org/2000/svg"
+          {shippingWarning && (
+            <span style={{ color: "red" }}>{shippingWarning}</span>
+          )}
+          {product?.Shipping === "true" && (
+            <>
+              <div
+                className={`shipping ${
+                  selectedShipping === "100" ? "selected" : ""
+                }`}
+                onClick={() => setSelectedShipping("100")}
               >
-                <path
-                  d="M6 1C3.239 1 1 3.216 1 5.95C1 8.157 1.875 13.395 10.488 18.69C10.6423 18.7839 10.8194 18.8335 11 18.8335C11.1806 18.8335 11.3577 18.7839 11.512 18.69C20.125 13.395 21 8.157 21 5.95C21 3.216 18.761 1 16 1C13.239 1 11 4 11 4C11 4 8.761 1 6 1Z"
-                  stroke="black"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-          <div className="delivery-concern">
-            <div className="delivery-free">
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11.6666 31.6667C13.5076 31.6667 15 30.1743 15 28.3333C15 26.4924 13.5076 25 11.6666 25C9.8257 25 8.33331 26.4924 8.33331 28.3333C8.33331 30.1743 9.8257 31.6667 11.6666 31.6667Z"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M28.3333 31.6667C30.1743 31.6667 31.6667 30.1743 31.6667 28.3333C31.6667 26.4924 30.1743 25 28.3333 25C26.4924 25 25 26.4924 25 28.3333C25 30.1743 26.4924 31.6667 28.3333 31.6667Z"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.33331 28.3335H6.99998C5.89541 28.3335 4.99998 27.4381 4.99998 26.3335V21.6668M3.33331 8.3335H19.6666C20.7712 8.3335 21.6666 9.22893 21.6666 10.3335V28.3335M15 28.3335H25M31.6667 28.3335H33C34.1046 28.3335 35 27.4381 35 26.3335V18.3335M35 18.3335H21.6666M35 18.3335L30.5826 10.9712C30.2211 10.3688 29.5701 10.0002 28.8676 10.0002H21.6666"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8 28H6.66667C5.5621 28 4.66667 27.1046 4.66667 26V21.3333M3 8H19.3333C20.4379 8 21.3333 8.89543 21.3333 10V28M15 28H24.6667M32 28H32.6667C33.7712 28 34.6667 27.1046 34.6667 26V18M34.6667 18H21.3333M34.6667 18L30.2493 10.6377C29.8878 10.0353 29.2368 9.66667 28.5343 9.66667H21.3333"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M5 11.8182H11.6667"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M1.81818 15.4546H8.48484"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M5 19.0909H11.6667"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span>{t("inside_sindh_label")}</span>
+              </div>
+              <div
+                className={`shipping ${
+                  selectedShipping === "150" ? "selected" : ""
+                }`}
+                onClick={() => setSelectedShipping("150")}
+              >
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11.6666 31.6667C13.5076 31.6667 15 30.1743 15 28.3333C15 26.4924 13.5076 25 11.6666 25C9.8257 25 8.33331 26.4924 8.33331 28.3333C8.33331 30.1743 9.8257 31.6667 11.6666 31.6667Z"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M28.3333 31.6667C30.1743 31.6667 31.6667 30.1743 31.6667 28.3333C31.6667 26.4924 30.1743 25 28.3333 25C26.4924 25 25 26.4924 25 28.3333C25 30.1743 26.4924 31.6667 28.3333 31.6667Z"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8.33331 28.3335H6.99998C5.89541 28.3335 4.99998 27.4381 4.99998 26.3335V21.6668M3.33331 8.3335H19.6666C20.7712 8.3335 21.6666 9.22893 21.6666 10.3335V28.3335M15 28.3335H25M31.6667 28.3335H33C34.1046 28.3335 35 27.4381 35 26.3335V18.3335M35 18.3335H21.6666M35 18.3335L30.5826 10.9712C30.2211 10.3688 29.5701 10.0002 28.8676 10.0002H21.6666"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8 28H6.66667C5.5621 28 4.66667 27.1046 4.66667 26V21.3333M3 8H19.3333C20.4379 8 21.3333 8.89543 21.3333 10V28M15 28H24.6667M32 28H32.6667C33.7712 28 34.6667 27.1046 34.6667 26V18M34.6667 18H21.3333M34.6667 18L30.2493 10.6377C29.8878 10.0353 29.2368 9.66667 28.5343 9.66667H21.3333"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M5 11.8182H11.6667"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M1.81818 15.4546H8.48484"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M5 19.0909H11.6667"
+                    stroke="black"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span>{t("outside_sindh_label")}</span>
+              </div>
+            </>
+          )}
+          {product?.Shipping === "false" && (
+            <div className="shipping">
               <svg
                 width="40"
                 height="40"
@@ -396,6 +546,31 @@ function ProductPage() {
               </svg>
               <span>{t("Free_Delivery_label")}</span>
             </div>
+          )}
+          <div className="product-cart-concern">
+            <button className="add-to-cart-btn" onClick={handleAddToCartItem}>
+              {t("Add_To_Cart")}
+            </button>
+            <button className="buy-now-btn" onClick={handleBuyNowItem}>
+              {t("Buy_Now")}
+            </button>
+            <button className="add-wish-btn" onClick={handleWishlistToggle}>
+              <svg
+                width="22"
+                height="20"
+                viewBox="0 0 22 20"
+                fill={heart ? "#000" : "none"}
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 1C3.239 1 1 3.216 1 5.95C1 8.157 1.875 13.395 10.488 18.69C10.6423 18.7839 10.8194 18.8335 11 18.8335C11.1806 18.8335 11.3577 18.7839 11.512 18.69C20.125 13.395 21 8.157 21 5.95C21 3.216 18.761 1 16 1C13.239 1 11 4 11 4C11 4 8.761 1 6 1Z"
+                  stroke="black"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -437,7 +612,7 @@ function ProductPage() {
           </svg>
         </div>
       </div> */}
-      {relatedProducts.length > 0 && (
+      {relatedProducts?.length > 0 && (
         <div className="related-items">
           <div className="section-header">
             <div className="section-label">

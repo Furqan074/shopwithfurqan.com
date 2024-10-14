@@ -25,7 +25,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 function CreateSale() {
-  document.title = "Create Flash Sale | shopwithfurqan";
+  document.title = "Create Flash Sale | Shopwithfurqan";
   const [isLoading, setIsLoading] = useState(false);
   const [saleTitle, setSaleTitle] = useState("");
   const [endDate, setEndDate] = useState("");

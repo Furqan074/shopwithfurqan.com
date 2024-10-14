@@ -9,7 +9,8 @@ const URI =
     ? process.env.MongoDB_URI
     : process.env.MongoDB_LOCAL_URI;
 mongoose.connect(URI);
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const DOMAIN = process.env.DOMAIN;
 import usersRouter from "./routes/users.js";
 import adminRouter from "./routes/admin.js";
 
@@ -26,8 +27,9 @@ app.use(
       "http://localhost:4173",
       "http://localhost:4174",
       // Production Sites
-      "https://shopwithfurqan.com",
-      "https://admin.shopwithfurqan.com",
+      `https://${DOMAIN}`,
+      `https://www.${DOMAIN}`,
+      `https://admin.${DOMAIN}`,
     ],
     credentials: true,
   })
@@ -43,6 +45,6 @@ app.use((req, res) => {
   res.status(404);
 });
 
-app.listen(port, () => {
-  console.log(`Server running Locally on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running Locally on http://localhost:${PORT}`);
 });

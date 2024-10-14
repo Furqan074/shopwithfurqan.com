@@ -24,24 +24,31 @@ function Header() {
     fetchSuggestions("");
     setProducts([]);
   };
+
+  const debouncedFetchSuggestions = debounce(async (query) => {
+    setProducts([]);
+    if (!query) {
+      setProducts([]);
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/search?query=${query}`
+      );
+      const data = await response.json();
+      setProducts(data.results);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }, 300);
+
   const fetchSuggestions = useCallback(
-    debounce(async (query) => {
-      if (!query) {
-        setProducts([]);
-        return;
-      }
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/search?query=${query}`
-        );
-        const data = await response.json();
-        setProducts(data.results);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    }, 300),
-    []
+    (query) => {
+      debouncedFetchSuggestions(query);
+    },
+    [debouncedFetchSuggestions]
   );
+
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchTerm(query);
@@ -83,7 +90,7 @@ function Header() {
         <ul>
           <li className="logo">
             <Link to="/">
-              <img src={logo} alt="shopwithfurqan logo" />
+              <img src={logo} alt="Shopwithfurqan logo" />
             </Link>
           </li>
           <li className="searchBar">

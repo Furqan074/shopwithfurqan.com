@@ -7,7 +7,7 @@ import SignIn from "./SignIn";
 
 function Account() {
   const { t } = useTranslation();
-  document.title = `${t("my_profile")} | shopwithfurqan`;
+  document.title = `${t("my_profile")} | Shopwithfurqan`;
   const [isAuthorized, setIsAuthorized] = useState(true);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -80,7 +80,7 @@ function Account() {
 
       const data = await response.json();
 
-      const errorCodes = [404, 400, 429, 500];
+      const errorCodes = [404, 403, 400, 429, 500];
       if (errorCodes.includes(response.status)) {
         setPopupActive(true);
         setPopupValidation({
@@ -134,7 +134,7 @@ function Account() {
             </div>
           </div>
           <h1>
-            {t("welcome")} <span>Md shariah</span>
+            {t("welcome")} <span>{firstName}</span>
           </h1>
           <div className="user-info">
             <div className="user-nav">

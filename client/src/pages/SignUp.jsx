@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 function SignUp() {
   const { t } = useTranslation();
-  document.title = t("Create_account") + " | shopwithfurqan";
+  document.title = t("Create_account") + " | Shopwithfurqan";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +48,7 @@ function SignUp() {
 
       const data = await response.json();
 
-      const errorCodes = [404, 400, 429, 500];
+      const errorCodes = [404, 403, 400, 429, 500];
       if (errorCodes.includes(response.status)) {
         setValidationMessage(data.message);
         return;

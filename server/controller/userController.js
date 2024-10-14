@@ -5,6 +5,7 @@ import Customers from "../modals/customer.js";
 import Products from "../modals/product.js";
 import Orders from "../modals/order.js";
 const JWT_SECRET = process.env.JWT_SECRET;
+const DOMAIN = process.env.DOMAIN;
 import { Resend } from "resend";
 
 // login customer
@@ -58,7 +59,7 @@ export const login = async (req, res) => {
       {
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
-        domain: process.env.NODE_ENV === "production" ? "shopwithfurqan.com" : "",
+        domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
       }
     );
@@ -102,7 +103,7 @@ export const recover = async (req, res) => {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
-      from: "shopwithfurqan <noreply@shopwithfurqan.com>",
+      from: `Shopwithfurqan <noreply@${DOMAIN}>`,
       to: existingCustomer.Email,
       subject: "Reset your password",
       html: `<main style="text-align: center; font-family: Arial, Helvetica, sans-serif">
@@ -242,7 +243,7 @@ export const register = async (req, res) => {
       {
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
-        domain: process.env.NODE_ENV === "production" ? "shopwithfurqan.com" : "",
+        domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
       }
     );
@@ -251,7 +252,7 @@ export const register = async (req, res) => {
       success: true,
     });
   } catch (err) {
-    console.log("unknown error happen during registration " + err);
+    console.error("unknown error happen during registration " + err);
     res.status(500).json({
       message: "unknown error happen during registration",
     });
@@ -347,7 +348,7 @@ export const profile = async (req, res) => {
       {
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
-        domain: process.env.NODE_ENV === "production" ? "shopwithfurqan.com" : "",
+        domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
       }
     );
@@ -356,7 +357,7 @@ export const profile = async (req, res) => {
       success: true,
     });
   } catch (err) {
-    console.log("Unknown error happened during updating profile: " + err);
+    console.error("Unknown error happened during updating profile: " + err);
     res.status(500).json({
       status: 500,
       message: "Unknown error happened during updating profile",
@@ -370,8 +371,15 @@ export const getSingleProduct = async (req, res) => {
     const name = req.params.name;
     const productFound = await Products.findOne({
       Name: name,
-      $and: { Stock: { $gte: 1 } },
+      $and: [{ Stock: { $gte: 1 } }],
     });
+
+    if (!productFound) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found!",
+      });
+    }
 
     const relatedProductsFound = await Products.find({
       Collection: productFound.Collection,
@@ -389,7 +397,7 @@ export const getSingleProduct = async (req, res) => {
       relatedProductsFound,
     });
   } catch (error) {
-    console.log("error occur during getting product data:" + error);
+    console.error("error occur during getting product data:" + error);
   }
 };
 
@@ -406,9 +414,32 @@ export const getCollectionProducts = async (req, res) => {
       limit: parsedLimit = 16,
     } = req.query;
 
+    // Get distinct values for filters
+    const productsCollection = await Products.distinct("Collection", {
+      Collection: { $ne: "" },
+    });
+    const productsMaterial = await Products.distinct("Material", {
+      Material: { $ne: "" },
+    });
+    const productsBrands = await Products.distinct("Brand", {
+      Brand: { $ne: "" },
+    });
+
+    const page = parseInt(parsedPage);
+    const limit = parseInt(parsedLimit);
+    let totalDocs = undefined;
+    let totalPages = undefined;
+
     const query = {
-      Collection: collectionName,
-      $and: { Stock: { $gte: 1 } },
+      $or: [
+        {
+          Collection: collectionName,
+        },
+        {
+          ListedSection: collectionName,
+        },
+      ],
+      $and: [{ Stock: { $gte: 1 } }],
     };
 
     if (brand !== "null") {
@@ -421,6 +452,24 @@ export const getCollectionProducts = async (req, res) => {
       ).replace(/__PERCENT__/g, "% ");
     }
 
+    if (ribbon === "new") {
+      // If ribbon is "new", sort by createdAt
+      const productsFound = await Products.find(query)
+        .sort({ createdAt: -1 }) // Sort by createdAt descending
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+      return res.status(200).json({
+        success: true,
+        productsFound,
+        productsCollection,
+        productsMaterial,
+        productsBrands,
+        totalPages: Array.from({ length: totalPages }, (_, index) => index + 1),
+      });
+    }
+
+    // Regular product retrieval if ribbon is not "new"
     if (ribbon) {
       query.Ribbon = ribbon;
     }
@@ -431,8 +480,6 @@ export const getCollectionProducts = async (req, res) => {
 
     if (price_range) {
       const [minPrice, maxPrice] = price_range.split("-").map(Number);
-
-      query.$and = [];
 
       query.$and.push({
         $or: [
@@ -449,24 +496,12 @@ export const getCollectionProducts = async (req, res) => {
       });
     }
 
-    const page = parseInt(parsedPage);
-    const limit = parseInt(parsedLimit);
-    const totalDocs = await Products.countDocuments();
-    const totalPages = Math.ceil(totalDocs / limit);
+    totalDocs = await Products.countDocuments(query);
+    totalPages = Math.ceil(totalDocs / limit);
 
     const productsFound = await Products.find(query)
       .skip((page - 1) * limit)
       .limit(limit);
-
-    const productsCollection = await Products.distinct("Collection", {
-      Collection: { $ne: "" },
-    });
-    const productsMaterial = await Products.distinct("Material", {
-      Material: { $ne: "" },
-    });
-    const productsBrands = await Products.distinct("Brand", {
-      Brand: { $ne: "" },
-    });
 
     res.status(200).json({
       success: true,
@@ -474,10 +509,15 @@ export const getCollectionProducts = async (req, res) => {
       productsCollection,
       productsMaterial,
       productsBrands,
-      totalPages: Array.from({ length: totalPages }, (_, index) => index + 1), // covert Number to Array, generated by chatgpt.
+      totalPages: Array.from({ length: totalPages }, (_, index) => index + 1),
     });
   } catch (error) {
-    console.log("error occur during getting collection of products:" + error);
+    console.error(
+      "Error occurred during getting collection of products: " + error
+    );
+    res.status(500).json({
+      message: "Unknown error occurred while retrieving products.",
+    });
   }
 };
 
@@ -487,7 +527,7 @@ export const checkout = async (req, res) => {
     const loggedInEmail = req.cookies?.token?.customerEmail;
     const existingCustomer = await Customers.findOne({ Email: email });
 
-    if (existingCustomer?.Email !== loggedInEmail) {
+    if (existingCustomer && existingCustomer?.Email !== loggedInEmail) {
       return res.status(404).json({
         status: 404,
         message:
@@ -545,16 +585,16 @@ export const checkout = async (req, res) => {
     );
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
-      from: "shopwithfurqan <orders@shopwithfurqan.com>",
+      from: `Shopwithfurqan <orders@${DOMAIN}>`,
       to: email,
       subject: "🎉 Your Order Has Been Successfully Placed!",
-      html: `<main style="text-align: center; font-family: Arial, Helvetica, sans-serif">
+      html: `<main style="font-family: Arial, Helvetica, sans-serif">
       <h1>Order Received Successfully</h1>
       <h2 style="text-transform: capitalize;">Hi ${name},</h2>
-      <p style="font-weight: 600">
-        Your Order received Successfully! click below to manage your Orders. it is necessary that you login with the email you gave at checkout.
+      <p style="font-weight: 600; font-size: 1.2em; color: #000; opacity: 0.6;">
+        Your Order received Successfully! click below to manage your Orders.
       </p>
-      <a href="http://localhost:5173/orders">
+      <a href="http://${DOMAIN}/orders"> 
         <button
           style="
             border: none;
@@ -570,17 +610,22 @@ export const checkout = async (req, res) => {
           Click Here
         </button>
       </a>
+      <p style="font-weight: 600; font-size: 1.2em; color: #000; opacity: 0.6;">
+        <strong style="font-weight: 800">Note:</strong> It is necessary that you login with the email you gave at the Checkout.
+      </p>
     </main>`,
     });
     if (error) {
-      console.log("error sending email:" + error);
+      console.error("error sending email:");
+      console.error(error);
     }
     return res.status(200).json({
       success: true,
       message: "Order Placed Successfully!",
     });
   } catch (error) {
-    console.log("error occur during Order Placing:" + error);
+    console.error("error occur during Order Placing: ");
+    console.error(error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -598,7 +643,7 @@ export const getCustomerOrders = async (req, res) => {
       ordersFound,
     });
   } catch (error) {
-    console.log("error occur during getting collection of products:" + error);
+    console.error("error occur during getting collection of products:" + error);
   }
 };
 
@@ -609,7 +654,7 @@ export const search = async (req, res) => {
     if (!query) {
       return res.status(400).json({ error: "Query parameter is required" });
     }
-
+    // TODO test name in UR
     const results = await Products.aggregate([
       {
         $search: {
@@ -635,6 +680,6 @@ export const search = async (req, res) => {
       results,
     });
   } catch (error) {
-    console.log("error occur during getting customers data:" + error);
+    console.error("error occur during getting search data: " + error);
   }
 };

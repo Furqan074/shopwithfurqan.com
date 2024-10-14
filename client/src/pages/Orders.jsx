@@ -4,15 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 import SignIn from "./SignIn";
+import Loading from "../components/Loading.jsx";
 
 function Orders() {
   const { t } = useTranslation();
-  document.title = `${t("my_profile")} | shopwithfurqan`;
+  document.title = `${t("my_profile")} | Shopwithfurqan`;
   const [isAuthorized, setIsAuthorized] = useState(true);
   const [orders, setOrders] = useState([]);
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [isLoading, setLoading] = useState(false);
+
   const getOrders = useCallback(async () => {
+    setLoading(true);
     try {
       const token = cookies.get("token");
       if (!token) {
@@ -23,7 +27,9 @@ function Orders() {
       setCustomerName(token.customerName);
       setCustomerEmail(token.customerEmail);
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/orders?email=${token.customerEmail}`,
+        `${import.meta.env.VITE_BACKEND_URL}/orders?email=${
+          token.customerEmail
+        }`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -36,9 +42,12 @@ function Orders() {
 
       if (data.success) {
         setOrders(data.ordersFound);
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error updating user info:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -89,38 +98,46 @@ function Orders() {
                   <span>{t("total")}</span>
                   <span>{t("actions")}</span>
                 </div>
-                <div className="orders">
-                  {orders.length === 0 && (
-                    <div style={{ textAlign: "center" }}>
-                      No Orders Found! Place One To See Here.
-                    </div>
-                  )}
-                  {orders.map((order) => (
-                    <div className="order" key={order.orderId}>
-                      <span>{order.orderId}</span>
-                      <span>
-                        {new Date(order.createdAt).toISOString().split("T")[0]}
-                      </span>
-                      <span>{order.orderedItems?.length}</span>
-                      <span>PKR  {order.totalAmount}</span>
-                      <span className="order-action">
-                        <a
-                          href={`https://wa.me/+8801886556706/?text=Track+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
-                          target="_blank"
-                        >
-                          {t("track_order")}
-                        </a>
-                        |
-                        <a
-                          href={`https://wa.me/+8801886556706/?text=Cancel+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
-                          target="_blank"
-                        >
-                          {t("cancel")}
-                        </a>
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                {isLoading ? (
+                  <Loading />
+                ) : (
+                  <div className="orders">
+                    {orders.length === 0 && (
+                      <div style={{ textAlign: "center" }}>
+                        No Orders Found! Place One To See Here.
+                      </div>
+                    )}
+                    {orders?.map((order) => (
+                      <div className="order" key={order.orderId}>
+                        <span>{order.orderId}</span>
+                        <span>
+                          {
+                            new Date(order.createdAt)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                        </span>
+                        <span>{order.orderedItems?.length}</span>
+                        <span>PKR {order.totalAmount}</span>
+                        <span className="order-action">
+                          <a
+                            href={`https://wa.me/+8801886556706/?text=Track+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
+                            target="_blank"
+                          >
+                            {t("track_order")}
+                          </a>
+                          |
+                          <a
+                            href={`https://wa.me/+8801886556706/?text=Cancel+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
+                            target="_blank"
+                          >
+                            {t("cancel")}
+                          </a>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -7,6 +7,8 @@ import cloudinary from "../utils/cloudinary.js";
 import Orders from "../modals/order.js";
 import FlashSale from "../modals/flashsale.js";
 const JWT_SECRET = process.env.JWT_SECRET;
+const UPLOAD_PRESET = process.env.CLOUDINARY_UPLOAD_PRESET;
+const DOMAIN = process.env.DOMAIN;
 
 export const adminLogin = async (req, res) => {
   try {
@@ -44,8 +46,7 @@ export const adminLogin = async (req, res) => {
       {
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
-        domain:
-          process.env.NODE_ENV === "production" ? "shopwithfurqan.com" : "",
+        domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
       }
     );
@@ -54,7 +55,7 @@ export const adminLogin = async (req, res) => {
       success: true,
     });
   } catch (err) {
-    console.log("unknown error happen admin login " + err);
+    console.error("unknown error happen admin login " + err);
     res.status(500).json({
       message: `unknown error happen admin login ${err}`,
     });
@@ -108,6 +109,31 @@ export const updateOrder = async (req, res) => {
   }
 };
 
+export const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    const deletedOrder = await Orders.deleteOne({ _id: id });
+
+    if (deletedOrder.deletedCount === 1) {
+      return res.status(200).json({
+        success: true,
+        message: "Order Deleted Successfully!",
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: "Order Deletion Failed!",
+    });
+  } catch (error) {
+    console.error("Unexpected Error occur during deletion of Order" + error);
+    return res.status(400).json({
+      success: false,
+      message: "Order Deletion Failed!",
+    });
+  }
+};
+
 export const getAllCustomer = async (req, res) => {
   try {
     const allCustomer = await Customers.find().select(["-Password"]);
@@ -116,7 +142,7 @@ export const getAllCustomer = async (req, res) => {
       customers: allCustomer,
     });
   } catch (error) {
-    console.log("error occur during getting customers data:" + error);
+    console.error("error occur during getting customers data:" + error);
   }
 };
 
@@ -134,7 +160,7 @@ export const deleteCustomer = async (req, res) => {
       message: "Customer Deletion Failed!",
     });
   } catch (error) {
-    console.log("Unexpected Error occur during deletion of customer" + error);
+    console.error("Unexpected Error occur during deletion of customer" + error);
   }
 };
 
@@ -171,7 +197,7 @@ export const createCategory = async (req, res) => {
     }
 
     const existingCategory = await Categories.findOne({ Name: name });
-    const existingCategoryBn = await Categories.findOne({ NameInBn: name_ur });
+    const existingCategoryUr = await Categories.findOne({ NameInUr: name_ur });
 
     if (existingCategory) {
       return res.status(403).json({
@@ -179,7 +205,7 @@ export const createCategory = async (req, res) => {
         message: "Category Name already exists",
       });
     }
-    if (existingCategoryBn) {
+    if (existingCategoryUr) {
       return res.status(403).json({
         success: false,
         message: "Category Name in Ur already exists",
@@ -195,12 +221,12 @@ export const createCategory = async (req, res) => {
     );
 
     const uploadResponse = await cloudinary.uploader.upload(image, {
-      upload_preset: "shopwithfurqan",
+      upload_preset: UPLOAD_PRESET,
     });
 
     const url = cloudinary.url(uploadResponse.public_id, {
       transformation: [
-        { fetch_format: "auto", quality: "auto" },
+        { fetch_format: "auto", quality: "100" },
         {
           width: 290,
           height: 350,
@@ -214,9 +240,10 @@ export const createCategory = async (req, res) => {
       Name: name,
       Image: url,
       ImageId: uploadResponse.public_id,
-      NameInBn: name_ur || name,
+      NameInUr: name_ur || name,
       SubCategories: en_sub_categories,
-      SubCategoriesInBn: fixed_sub_categories,
+      SubCategoriesInUr: fixed_sub_categories,
+      ProductsAssigned: 0,
     });
 
     await newCategory.save();
@@ -226,9 +253,10 @@ export const createCategory = async (req, res) => {
       message: "Category Created Successfully!",
     });
   } catch (error) {
-    console.log(
-      "Unexpected Error occurred during the creation of category: " + error
+    console.error(
+      "Unexpected Error occurred during the creation of category: "
     );
+    console.error(error);
     return res.status(400).json({
       success: false,
       message: "Category Not Created!",
@@ -258,7 +286,7 @@ export const updateCategory = async (req, res) => {
         message: "Category Name already exists",
       });
     }
-    if (name_ur === categoryFound.NameInBn) {
+    if (name_ur === categoryFound.NameInUr) {
       return res.status(403).json({
         success: false,
         message: "Category Name in Ur already exists",
@@ -277,7 +305,7 @@ export const updateCategory = async (req, res) => {
 
     if (image) {
       uploadResponse = await cloudinary.uploader.upload(image, {
-        upload_preset: "shopwithfurqan",
+        upload_preset: UPLOAD_PRESET,
       });
 
       categoryFound.Image = uploadResponse.url;
@@ -285,7 +313,7 @@ export const updateCategory = async (req, res) => {
     }
 
     categoryFound.Name = name || categoryFound.Name;
-    categoryFound.NameInBn = name_ur || categoryFound.NameInBn;
+    categoryFound.NameInUr = name_ur || categoryFound.NameInUr;
     categoryFound.SubCategories =
       en_sub_categories || categoryFound.SubCategories;
     categoryFound.SubCategories =
@@ -330,7 +358,7 @@ export const getAllCategories = async (req, res) => {
       totalPages: Array.from({ length: totalPages }, (_, index) => index + 1), // covert Number to Array, generated by chatgpt.
     });
   } catch (error) {
-    console.log("error occur during getting Categories data:" + error);
+    console.error("error occur during getting Categories data:" + error);
   }
 };
 
@@ -352,7 +380,7 @@ export const deleteCategory = async (req, res) => {
       message: "Category Deletion Failed!",
     });
   } catch (error) {
-    console.log("Unexpected Error occur during deletion of Category" + error);
+    console.error("Unexpected Error occur during deletion of Category" + error);
     return res.status(400).json({
       success: false,
       message: "Category Deletion Failed!",
@@ -376,7 +404,7 @@ export const createBanner = async (req, res) => {
 
     const uploadResponse = await cloudinary.uploader.upload(media, {
       resource_type: resourceType,
-      upload_preset: "shopwithfurqan",
+      upload_preset: UPLOAD_PRESET,
     });
 
     const newBanner = new Banners({
@@ -394,9 +422,8 @@ export const createBanner = async (req, res) => {
       message: "Banner created Successfully!",
     });
   } catch (error) {
-    console.log(
-      "Unexpected Error occurred during the creation of banner: " + error
-    );
+    console.error("Unexpected Error occurred during the creation of banner: ");
+    console.error(error);
     return res.status(400).json({
       success: false,
       message: "Banner Not Created!",
@@ -426,7 +453,7 @@ export const updateBanner = async (req, res) => {
     if (media) {
       uploadResponse = await cloudinary.uploader.upload(media, {
         resource_type: resourceType || bannerFound.MediaType,
-        upload_preset: "shopwithfurqan",
+        upload_preset: UPLOAD_PRESET,
       });
 
       bannerFound.Media = uploadResponse.url;
@@ -434,9 +461,9 @@ export const updateBanner = async (req, res) => {
       bannerFound.MediaType = mediaType;
     }
 
-    bannerFound.Name = name || bannerFound.Name;
-    bannerFound.SlideDelay = delayTime || bannerFound.SlideDelay;
-    bannerFound.Link = link || bannerFound.Link;
+    bannerFound.Name = name;
+    bannerFound.SlideDelay = delayTime;
+    bannerFound.Link = link;
 
     await bannerFound.save();
 
@@ -445,10 +472,8 @@ export const updateBanner = async (req, res) => {
       message: "Banner updated Successfully!",
     });
   } catch (error) {
-    console.error(
-      "Unexpected Error occurred during updating the banner:",
-      error
-    );
+    console.error("Unexpected Error occurred during updating the banner:");
+    console.error(error);
     return res.status(400).json({
       success: false,
       message: "Banner Not Updated!",
@@ -477,14 +502,19 @@ export const getAllBanner = async (req, res) => {
       totalPages: Array.from({ length: totalPages }, (_, index) => index + 1), // covert Number to Array, generated by chatgpt.
     });
   } catch (error) {
-    console.log("error occur during getting Banners data:" + error);
+    console.error("error occur during getting Banners data:" + error);
   }
 };
 
 export const deleteBanner = async (req, res) => {
   try {
-    const { id, media_id } = req.query;
-    const deleteResponse = await cloudinary.uploader.destroy(media_id);
+    const { id, media_id, media_type } = req.query;
+
+    const resourceType = media_type.includes("video") ? "video" : "image";
+
+    const deleteResponse = await cloudinary.uploader.destroy(media_id, {
+      resource_type: resourceType,
+    });
 
     const deletedBanner = await Banners.deleteOne({ _id: id });
 
@@ -499,40 +529,13 @@ export const deleteBanner = async (req, res) => {
       message: "Banner Deletion Failed!",
     });
   } catch (error) {
-    console.log("Unexpected Error occur during deletion of Banner" + error);
+    console.error("Unexpected Error occur during deletion of Banner");
+    console.error(error);
     return res.status(400).json({
       success: false,
       message: "Banner Deletion Failed!",
     });
   }
-};
-
-const uploadManyImagesToCloudinary = async (images) => {
-  const uploadedImages = await Promise.all(
-    images.map(async (image) => {
-      const uploadResponse = await cloudinary.uploader.upload(image, {
-        upload_preset: "shopwithfurqan",
-      });
-      const url = cloudinary.url(uploadResponse.public_id, {
-        transformation: [
-          { fetch_format: "auto", quality: "auto" },
-          {
-            width: 290,
-            height: 350,
-            crop: "fill",
-            gravity: "auto",
-          },
-        ],
-      });
-
-      return {
-        url: url,
-        public_id: uploadResponse.public_id,
-      };
-    })
-  );
-
-  return uploadedImages;
 };
 
 // Create product
@@ -541,12 +544,13 @@ export const createProduct = async (req, res) => {
     const {
       name,
       name_ur,
-      images,
+      medias,
       material,
       material_ur,
       brand,
       price,
       discountedPrice,
+      shipping,
       ribbon,
       stock,
       colors,
@@ -559,8 +563,9 @@ export const createProduct = async (req, res) => {
 
     const requiredFields = [
       "name",
-      "images",
+      "medias",
       "price",
+      "shipping",
       "material",
       "listedSection",
       "collection",
@@ -579,7 +584,7 @@ export const createProduct = async (req, res) => {
     }
 
     const existingProduct = await Products.findOne({ Name: name });
-    const existingProductBn = await Products.findOne({ NameInBn: name_ur });
+    const existingProductUr = await Products.findOne({ NameInUr: name_ur });
 
     if (existingProduct) {
       return res.status(403).json({
@@ -587,37 +592,57 @@ export const createProduct = async (req, res) => {
         message: "Product Name already exists",
       });
     }
-    if (existingProductBn) {
+    if (existingProductUr) {
       return res.status(403).json({
         success: false,
         message: "Product Name in Ur already exists",
       });
     }
 
-    const uploadedImages = await uploadManyImagesToCloudinary(images);
+    const transformedMedia = medias.map((media) => {
+      const transformationOptions =
+        media.mediaType === "image"
+          ? [{ fetch_format: "auto", quality: "60" }]
+          : [{ quality: "60" }];
 
-    const imageUrls = uploadedImages.map((img) => img.url);
-    const imageIds = uploadedImages.map((img) => img.public_id);
+      const url = cloudinary.url(media.mediaId, {
+        transformation: transformationOptions,
+        resource_type: media.mediaType,
+        secure: true,
+      });
+
+      return {
+        source: url,
+        mediaType: media.mediaType,
+        mediaId: media.mediaId,
+      };
+    });
 
     const newProduct = new Products({
       Name: name,
-      NameInBn: name_ur || name,
-      Images: imageUrls,
-      ImageIds: imageIds,
+      NameInUr: name_ur || name,
+      Media: transformedMedia.map((media) => {
+        return {
+          source: media.source,
+          mediaType: media.mediaType,
+          mediaId: media.mediaId,
+        };
+      }),
       Material: material,
-      MaterialInBn: material_ur || material,
+      MaterialInUr: material_ur || material,
       Brand: brand,
       Price: price,
+      Shipping: shipping,
       Ribbon: ribbon,
       DiscountedPrice: discountedPrice,
-      DiscountPercentage: Math.ceil((discountedPrice / price) * 100),
+      DiscountPercentage: Math.ceil(((price - discountedPrice) / price) * 100),
       Stock: stock,
       Colors: colors?.split(",").map((item) => item.trim()),
       Sizes: sizes?.split(",").map((item) => item.trim()),
       ListedSection: listedSection,
       Collection: collection,
       Description: description,
-      DescriptionInBn: description_ur || description,
+      DescriptionInUr: description_ur || description,
     });
 
     await newProduct.save();
@@ -626,20 +651,21 @@ export const createProduct = async (req, res) => {
     const relatedCategory = await Categories.findOne({
       Name: newProduct.Collection,
     });
-    relatedCategory.ProductsAssigned =
-      Number(relatedCategory.ProductsAssigned) || 0;
+    if (relatedCategory) {
+      relatedCategory.ProductsAssigned =
+        Number(relatedCategory.ProductsAssigned) || 0;
 
-    relatedCategory.ProductsAssigned += 1;
-    await relatedCategory.save();
+      relatedCategory.ProductsAssigned += 1;
+      await relatedCategory.save();
+    }
 
     return res.status(200).json({
       success: true,
       message: "Product created successfully!",
     });
   } catch (error) {
-    console.log(
-      "Unexpected Error occurred during the creation of product: " + error
-    );
+    console.error("Unexpected Error occurred during the creation of product: ");
+    console.error(error);
     return res.status(400).json({
       success: false,
       message: "Product Not Created!",
@@ -653,12 +679,13 @@ export const updateProduct = async (req, res) => {
     const {
       name,
       name_ur,
-      images,
+      medias,
       material,
       material_ur,
       brand,
       price,
       discountedPrice,
+      shipping,
       ribbon,
       stock,
       colors,
@@ -678,59 +705,99 @@ export const updateProduct = async (req, res) => {
     if (!productFound) {
       return res.status(404).json({
         success: false,
-        message: "Product not found! with that id.",
+        message: "Product not found! with the id.",
       });
     }
 
-    const existingProduct = await Products.findOne({ Name: name });
-    const existingProductBn = await Products.findOne({ NameInBn: name_ur });
+    const existingProductName = await Products.findOne({ Name: name });
+    const existingProductNameUr = await Products.findOne({ NameInUr: name_ur });
 
-    if (existingProduct) {
+    if (existingProductName && existingProductName.Name !== productFound.Name) {
       return res.status(403).json({
         success: false,
         message: "Product Name already exists",
       });
     }
-    if (existingProductBn) {
+    if (
+      existingProductNameUr &&
+      existingProductNameUr.NameInUr !== productFound.NameInUr
+    ) {
       return res.status(403).json({
         success: false,
         message: "Product Name in Ur already exists",
       });
     }
 
-    if (images) {
-      const uploadedImages = await uploadManyImagesToCloudinary(images);
-      const imageUrls = uploadedImages.map((img) => img.url);
-      const imageIds = uploadedImages.map((img) => img.public_id);
-      await cloudinary.api.delete_resources(productFound.ImageIds);
-      productFound.Images = imageUrls || productFound.Images;
-      productFound.ImageIds = imageIds || productFound.ImageIds;
+    if (medias.length > 0) {
+      const updatedMediaIds = new Set(medias.map((media) => media.mediaId));
+
+      const mediaToDelete = productFound.Media.filter(
+        (media) => !updatedMediaIds.has(media.mediaId)
+      );
+
+      const deletionPromises = mediaToDelete.map(async (media) => {
+        try {
+          await cloudinary.api.delete_resources(media.mediaId, {
+            resource_type: media.mediaType,
+          });
+        } catch (error) {
+          console.error(`Failed to delete media ${media.mediaId}`, error);
+        }
+      });
+
+      await Promise.all(deletionPromises);
+
+      const transformedMedia = medias.map((media) => {
+        const transformationOptions =
+          media.mediaType === "image"
+            ? [{ fetch_format: "auto", quality: "60" }]
+            : [{ quality: "60" }];
+
+        const url = cloudinary.url(media.mediaId, {
+          transformation: transformationOptions,
+          resource_type: media.mediaType,
+          secure: true,
+        });
+
+        return {
+          source: url,
+          mediaType: media.mediaType,
+          mediaId: media.mediaId,
+        };
+      });
+
+      productFound.Media = transformedMedia.map((media) => ({
+        source: media.source,
+        mediaType: media.mediaType,
+        mediaId: media.mediaId,
+      }));
     }
 
     productFound.Name = name || productFound.Name;
-    productFound.NameInBn = name_ur || productFound.NameInBn;
+    productFound.NameInUr = name_ur || productFound.NameInUr;
     productFound.Material = material || productFound.Material;
-    productFound.MaterialInBn = material_ur || productFound.MaterialInBn;
-    productFound.Brand = brand || productFound.Brand;
+    productFound.MaterialInUr = material_ur || productFound.MaterialInUr;
+    productFound.Brand = brand;
     productFound.Price = price || productFound.Price;
-    productFound.Ribbon = ribbon || productFound.Ribbon;
-    productFound.DiscountedPrice =
-      discountedPrice || productFound.DiscountedPrice;
+    productFound.Shipping = shipping || productFound.Shipping;
+    productFound.Ribbon = ribbon;
+    productFound.DiscountedPrice = ribbon === "sale" ? discountedPrice : null;
     productFound.DiscountPercentage =
-      Math.ceil((discountedPrice / price) * 100) ||
-      productFound.DiscountPercentage;
+      ribbon === "sale"
+        ? Math.ceil(((price - discountedPrice) / price) * 100)
+        : 0;
     productFound.Stock = stock || productFound.Stock;
-    productFound.Colors = colors
-      ? colors?.split(",").map((item) => item.trim())
-      : productFound.Colors;
-    productFound.Sizes = sizes
-      ? sizes?.split(",").map((item) => item.trim())
-      : productFound.Sizes;
+    productFound.Colors = Array.isArray(colors)
+      ? colors
+      : colors?.split(",").map((item) => item.trim());
+    productFound.Sizes = Array.isArray(sizes)
+      ? sizes
+      : sizes?.split(",").map((item) => item.trim());
     productFound.ListedSection = listedSection || productFound.ListedSection;
     productFound.Collection = collection || productFound.Collection;
     productFound.Description = description || productFound.Description;
-    productFound.DescriptionInBn =
-      description_ur || productFound.DescriptionInBn;
+    productFound.DescriptionInUr =
+      description_ur || productFound.DescriptionInUr;
     if (reviewStars && reviewText && reviewerName) {
       productFound.Reviews.push({
         Rating: reviewStars,
@@ -746,7 +813,8 @@ export const updateProduct = async (req, res) => {
       message: "Product Updated successfully!",
     });
   } catch (error) {
-    console.log("Unexpected Error occurred during updating product: " + error);
+    console.error("Unexpected Error occurred during updating product: ");
+    console.error(error);
     return res.status(400).json({
       success: false,
       message: "Product Not Updated!",
@@ -766,21 +834,25 @@ export const getAllProducts = async (req, res) => {
     const paginatedProducts = await Products.find()
       .skip((page - 1) * limit)
       .limit(limit);
+
     const TodayProducts = await Products.find({
-      ListedSection: "Today",
-      $and: { Stock: { $gte: 1 } },
+      ListedSection: "today",
+      $and: [{ Stock: { $gte: 1 } }],
     });
+
     const BestSellingProducts = await Products.find({
-      ListedSection: "BestSelling",
-      $and: { Stock: { $gte: 1 } },
+      ListedSection: "bestselling",
+      $and: [{ Stock: { $gte: 1 } }],
     });
+
     const ExploreProducts = await Products.find({
-      ListedSection: "Explore",
-      $and: { Stock: { $gte: 1 } },
+      ListedSection: "explore",
+      $and: [{ Stock: { $gte: 1 } }],
     });
+
     const NewArrivalProducts = await Products.find({
       ListedSection: "NewArrival",
-      $and: { Stock: { $gte: 1 } },
+      $and: [{ Stock: { $gte: 1 } }],
     });
 
     res.status(200).json({
@@ -790,33 +862,35 @@ export const getAllProducts = async (req, res) => {
       BestSellingProducts,
       ExploreProducts,
       NewArrivalProducts,
-      totalPages: Array.from({ length: totalPages }, (_, index) => index + 1), // covert Number to Array, generated by chatgpt.
+      totalPages: Array.from({ length: totalPages }, (_, index) => index + 1),
     });
   } catch (error) {
-    console.log("error occur during getting products data:" + error);
+    console.error("Error occurred while getting products data:", error);
+    res.status(500).json({ success: false, message: error });
   }
 };
 
-// Get reviews of product
-export const getProductReviews = async (req, res) => {
+// Get single product with id
+export const getSingleProduct = async (req, res) => {
   try {
     const id = req.params.id;
 
     const productFound = await Products.findById(id);
 
-    if (!productFound.RatingQty === 0) {
+    if (!productFound) {
       return res.status(404).json({
         success: false,
-        message: "Product Reviews not found!",
+        message: "Product not found!",
       });
     }
 
     res.status(200).json({
       success: true,
-      reviews: productFound.Reviews,
+      reviews: productFound?.Reviews,
+      product: productFound,
     });
   } catch (error) {
-    console.log("error occur during getting products reviews:" + error);
+    console.error("error occur during getting products reviews:" + error);
   }
 };
 
@@ -845,7 +919,7 @@ export const deleteProductReview = async (req, res) => {
       message: "Review deleted successfully!",
     });
   } catch (error) {
-    console.log("Error occurred during deleting product review: " + error);
+    console.error("Error occurred during deleting product review: " + error);
     res.status(400).json({
       success: false,
       message: "Error occurred during deleting review!",
@@ -855,13 +929,21 @@ export const deleteProductReview = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const { id, image_ids } = req.query;
-    const images = image_ids?.split(",");
+    const id = req.query.id;
+    const media = JSON.parse(req.query.media);
 
-    const deleteResponse = await cloudinary.api.delete_resources(images);
+    media.map(async (media) => {
+      const resourceType = media.mediaType.includes("video")
+        ? "video"
+        : "image";
+      await cloudinary.api.delete_resources(media.mediaId, {
+        resource_type: resourceType,
+      });
+    });
+
     const deletedProduct = await Products.deleteOne({ _id: id });
 
-    if (deletedProduct.deletedCount === 1 && deleteResponse.deleted) {
+    if (deletedProduct.deletedCount === 1) {
       return res.status(200).json({
         success: true,
         message: "Product Deleted Successfully!",
@@ -872,7 +954,7 @@ export const deleteProduct = async (req, res) => {
       message: "Product Deletion Failed!",
     });
   } catch (error) {
-    console.log("Unexpected Error occur during deletion of Product" + error);
+    console.error("Unexpected Error occur during deletion of Product" + error);
     return res.status(400).json({
       success: false,
       message: "Product Deletion Failed!",
@@ -899,39 +981,13 @@ export const getAllOrders = async (req, res) => {
       totalPages: Array.from({ length: totalPages }, (_, index) => index + 1), // covert Number to Array, generated by chatgpt.
     });
   } catch (error) {
-    console.log("error occur during getting orders data:" + error);
-  }
-};
-
-export const deleteOrder = async (req, res) => {
-  try {
-    const { id } = req.query;
-
-    const deletedOrder = await Orders.deleteOne({ _id: id });
-
-    if (deletedOrder.deletedCount === 1) {
-      return res.status(200).json({
-        success: true,
-        message: "Order Deleted Successfully!",
-      });
-    }
-    return res.status(400).json({
-      success: false,
-      message: "Order Deletion Failed!",
-    });
-  } catch (error) {
-    console.log("Unexpected Error occur during deletion of Order" + error);
-    return res.status(400).json({
-      success: false,
-      message: "Order Deletion Failed!",
-    });
+    console.error("error occur during getting orders data:" + error);
   }
 };
 
 export const createSale = async (req, res) => {
   try {
     const { saleTitle, endDate } = req.body;
-    console.log(req.body);
 
     if (!saleTitle || !endDate) {
       return res
@@ -951,7 +1007,7 @@ export const createSale = async (req, res) => {
       message: "Sale created Successfully!",
     });
   } catch (error) {
-    console.log(
+    console.error(
       "Unexpected Error occurred during the creation of Sale: " + error
     );
     return res.status(400).json({
@@ -984,7 +1040,9 @@ export const updateSale = async (req, res) => {
       message: "Sale Updated Successfully!",
     });
   } catch (error) {
-    console.log("Unexpected Error occurred during Updating the Sale: " + error);
+    console.error(
+      "Unexpected Error occurred during Updating the Sale: " + error
+    );
     return res.status(400).json({
       success: false,
       message: "Sale Not Updated!",
@@ -999,6 +1057,6 @@ export const getFlashSale = async (req, res) => {
       flashsale,
     });
   } catch (error) {
-    console.log("error occur during getting customers data:" + error);
+    console.error("error occur during getting customers data:" + error);
   }
 };

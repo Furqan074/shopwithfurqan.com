@@ -91,12 +91,20 @@ function Drawer() {
           <div id="drawer-item-wrapper">
             {products.map((item) => (
               <div className="drawer-item" key={item.productName}>
-                <div className="item-image">
+                <div className="item-media">
                   <Link to={`/products/${item.productName}`}>
-                    <img
-                      src={item.productImage}
-                      alt={`${item.productName} Image`}
-                    />
+                    {item?.productMedia?.includes("video") && (
+                      <video autoPlay loop muted>
+                        <source src={item.productMedia} />
+                        Your browser does not support the video tag.
+                      </video>
+                    )}
+                    {item?.productMedia?.includes("image") && (
+                      <img
+                        src={item.productMedia}
+                        alt={`${item.productName} Image`}
+                      />
+                    )}
                   </Link>
                 </div>
                 <div className="item-attributes">
@@ -106,7 +114,7 @@ function Drawer() {
                     </Link>
                   </div>
                   <div className="item-price">
-                    <span>PKR  {item.productPrice}</span>
+                    <span>PKR {item.productPrice}</span>
                   </div>
                   <div className="item-actions">
                     <div className="item-quantity-counter">
@@ -161,7 +169,7 @@ function Drawer() {
         <Link to="/checkout">
           {products.length > 0 && (
             <button className="checkout-button">
-              {t("checkout")} - PKR  {totalPrice}
+              {t("checkout")} - PKR {totalPrice}
             </button>
           )}
         </Link>

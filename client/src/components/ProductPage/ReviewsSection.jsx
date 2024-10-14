@@ -6,7 +6,6 @@ function ReviewsSection({ averageRating, reviews, ratingLabel }) {
     return reviews.filter((review) => review.Rating === rating).length;
   };
   const totalReviews = reviews.length;
-  // TODO add pagination here
   return (
     <div className="product-reviews-section">
       <div className="rating">

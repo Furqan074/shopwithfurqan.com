@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    NameInBn: {
+    NameInUr: {
       type: String,
       unique: true,
     },
@@ -15,27 +15,41 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    MaterialInBn: {
+    MaterialInUr: {
       type: String,
       required: true,
     },
     Brand: {
       type: String,
     },
-    Images: {
-      type: [String],
-      required: true,
-    },
-    ImageIds: {
-      type: [String],
-      required: true,
-    },
+    Media: [
+      {
+        source: {
+          type: String,
+          required: true,
+        },
+        mediaType: {
+          type: String,
+          required: true,
+        },
+        mediaId: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     Price: {
       type: Number,
       required: true,
     },
+    Shipping: {
+      type: String,
+      required: true,
+      enum: ["true", "false"],
+    },
     DiscountedPrice: {
       type: Number,
+      default: 0,
     },
     DiscountPercentage: {
       type: Number,
@@ -45,6 +59,8 @@ const productSchema = new mongoose.Schema(
     },
     Stock: {
       type: Number,
+      min: 0,
+      default: 0,
     },
     Colors: {
       type: [String],
@@ -54,7 +70,7 @@ const productSchema = new mongoose.Schema(
     },
     ListedSection: {
       type: String,
-      enums: ["Today", "BestSelling", "Explore", "NewArrival"],
+      enum: ["today", "bestselling", "explore", "NewArrival"],
       required: true,
     },
     Collection: {
@@ -64,7 +80,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    DescriptionInBn: {
+    DescriptionInUr: {
       type: String,
     },
     RatingQty: {

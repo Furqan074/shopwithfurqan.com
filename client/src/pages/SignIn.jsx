@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 function SignIn() {
   const { t } = useTranslation();
-  document.title = t("Login") + " | shopwithfurqan";
+  document.title = t("Login") + " | Shopwithfurqan";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
@@ -30,7 +30,7 @@ function SignIn() {
 
       const data = await response.json();
 
-      const errorCodes = [404, 400, 429, 500];
+      const errorCodes = [404, 403, 400, 429, 500];
       if (errorCodes.includes(response.status)) {
         setValidationMessage(data.message);
         return;

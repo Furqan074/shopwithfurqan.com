@@ -17,7 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const cookies = new Cookies();
 
 function UpdateBanner() {
-  document.title = "Update Banner | shopwithfurqan";
+  document.title = "Update Banner | Shopwithfurqan";
   const navigate = useNavigate();
   const { id } = useParams();
   const [selectedMedia, setSelectedMedia] = useState(null);

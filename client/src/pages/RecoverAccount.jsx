@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 function RecoverAccount() {
   const { t } = useTranslation();
-  document.title = t("recover_acc") + " | shopwithfurqan";
+  document.title = t("recover_acc") + " | Shopwithfurqan";
   const [email, setEmail] = useState("");
   const [validationMessage, setValidationMessage] = useState(null);
 
@@ -64,7 +64,7 @@ function RecoverAccount() {
         <img src={sideImage} alt="image with shopping tray" />
       </div>
       <div className="user-info">
-        <h1>{t("reset_pass_heading")}</h1>
+        <h1>{t("recover_pass")}</h1>
         <form onSubmit={handleRecover}>
           <input
             type="email"

@@ -1,13 +1,14 @@
 import SideFilter from "../components/collectionPage/SideFilter";
 import TopFilter from "../components/collectionPage/TopFilter";
 import ProductRow from "../components/ProductRow";
+import Loading from "../components/Loading.jsx";
 import { SideFilterProvider } from "../contexts/SideFilterContext";
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 
 function CollectionPage() {
   const { name } = useParams();
-  document.title = name + " | shopwithfurqan";
+  document.title = name + " | Shopwithfurqan";
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState([]);
   const [collectionProducts, setCollectionProducts] = useState([]);
@@ -19,6 +20,7 @@ function CollectionPage() {
   const [byRating, setByRating] = useState("");
   const [byBrand, setByBrand] = useState(null);
   const [byMaterial, setByMaterial] = useState(null);
+  const [isLoading, setLoading] = useState(false);
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -29,6 +31,7 @@ function CollectionPage() {
   };
 
   const getCollectionProducts = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `${
@@ -43,12 +46,15 @@ function CollectionPage() {
         setBrands(data.productsBrands);
         setCategories(data.productsCollection);
         setTotalPages(data.totalPages);
+        setLoading(false);
       } else {
         setCollectionProducts([]);
       }
     } catch (error) {
       console.error("Error Getting Collection Products:", error);
       setCollectionProducts([]);
+    } finally {
+      setLoading(false);
     }
   }, [name, sortBy, byRating, byPriceRange, byBrand, byMaterial, currentPage]);
 
@@ -74,6 +80,7 @@ function CollectionPage() {
           byBrand={byBrand}
           sortBy={sortBy}
           collectionName={name}
+          isLoading={isLoading}
         />
         <div className="collection-page-right-side">
           <TopFilter
@@ -81,6 +88,7 @@ function CollectionPage() {
             collectionName={name}
             setSortBy={setSortBy}
           />
+          {isLoading && <Loading />}
           <ProductRow products={collectionProducts} />
           {totalPages.length > 16 && (
             <div

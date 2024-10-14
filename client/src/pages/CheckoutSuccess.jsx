@@ -39,8 +39,8 @@ function CheckoutSuccess() {
             Thanks For Your Purchase.
           </h1>
           <h2 style={{ fontSize: "1.3em", fontWeight: "500" }}>
-            Your order was placed successfully! Please check your inbox or click
-            below for details.
+            Your order is placed successfully One of our moderators will contact
+            with you for confirmation!
           </h2>
           <Link to="/orders">
             <button

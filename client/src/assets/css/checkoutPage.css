@@ -67,7 +67,8 @@
   align-items: center;
   gap: 20px;
 }
-.checkout-section .order-summary-items .item img {
+.checkout-section .order-summary-items .item img,
+.checkout-section .order-summary-items .item video {
   height: 120px;
   width: 120px;
   object-fit: cover;

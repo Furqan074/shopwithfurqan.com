@@ -99,7 +99,7 @@ function CategoriesSection({ categories }) {
                     to={"/collection/" + category.Name}
                     className="category-button"
                   >
-                    {i18n.language === "ur" ? category.NameInBn : category.Name}
+                    {i18n.language === "ur" ? category.NameInUr : category.Name}
                   </Link>
                 </div>
               </div>

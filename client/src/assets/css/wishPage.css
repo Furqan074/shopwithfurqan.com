@@ -13,7 +13,7 @@
   font-weight: 500;
 }
 .wish-action button {
-  border: 2.5px solid rgb(0, 0, 0);
+  border: 2.5px solid var(--primary-color);
   border-radius: 4px;
   padding: 10px 20px;
   cursor: pointer;
@@ -22,7 +22,7 @@
   font-weight: 500;
   text-transform: capitalize;
   transition: all 0.45s cubic-bezier(0.785, 0.135, 0.15, 0.86);
-  background-color: rgb(0, 0, 0);
+  background-color: var(--primary-color);
   color: #fff;
 }
 .wish-action button:hover {
@@ -53,19 +53,20 @@
   flex-direction: column;
   gap: 8px;
 }
-.wish-card-image {
+.wish-card-media {
   height: 200px;
   position: relative;
   border-radius: 4px;
   overflow: hidden;
 }
-.wish-card-image img {
+.wish-card-media img,
+.wish-card-media video {
   border-radius: 4px;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.wish-card-image img:hover {
+.wish-card-media img:hover {
   scale: 1.05;
   transition: all 0.2s ease-in-out;
 }
@@ -132,7 +133,7 @@
     width: 160px;
     flex-grow: 1;
   }
-  .wish-card-image {
+  .wish-card-media {
     height: 180px;
   }
   .wish-heading h1 {

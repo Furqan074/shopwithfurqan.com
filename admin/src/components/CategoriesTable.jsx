@@ -51,7 +51,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 function CategoriesTable() {
-  document.title = "Categories | shopwithfurqan";
+  document.title = "Categories | Shopwithfurqan";
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState([]);

@@ -25,7 +25,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const cookies = new Cookies();
 
 function UpdateOrder() {
-  document.title = "Update Order | shopwithfurqan";
+  document.title = "Update Order | Shopwithfurqan";
   const navigate = useNavigate();
   const { id } = useParams();
   const [customerName, setCustomerName] = useState("");

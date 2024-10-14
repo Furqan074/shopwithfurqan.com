@@ -16,7 +16,7 @@ import UpdateBanner from "./components/UpdateBanner";
 import LoginPage from "./components/LoginPage";
 import CreateSale from "./components/CreateSale";
 const PageNotFound = () => {
-  document.title = "404 page not found | shopwithfurqan";
+  document.title = "404 page not found | Shopwithfurqan";
   return (
     <h1 className="text-center capitalize">
       This page does not exists go{" "}
@@ -58,7 +58,6 @@ function App() {
           <Toaster />
           <main className="flex-1 justify-center p-4">
             <Routes>
-              <Route path="/" Component={OrdersTable} />
               <Route path="/orders" Component={OrdersTable} />
               <Route path="/orders/update/:id" Component={UpdateOrder} />
               <Route path="/products" Component={ProductsTable} />

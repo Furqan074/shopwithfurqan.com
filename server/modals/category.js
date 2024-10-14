@@ -7,14 +7,14 @@ const categorySchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    NameInBn: {
+    NameInUr: {
       type: String,
       unique: true,
     },
     SubCategories: {
       type: [String],
     },
-    SubCategoriesInBn: {
+    SubCategoriesInUr: {
       type: [String],
     },
     Image: {

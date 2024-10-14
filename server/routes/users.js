@@ -15,6 +15,9 @@ import {
 import isTrueUser from "../middlewares/userAuth.js";
 import rateLimiter from "../middlewares/rateLimiter.js";
 
+router.get("/", (req, res) =>
+  res.send("If you are seeing this everything is working fine!")
+);
 router.get("/products/:name", getSingleProduct);
 router.get("/collection/:name", getCollectionProducts);
 router.get("/orders", isTrueUser, getCustomerOrders);

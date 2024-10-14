@@ -111,7 +111,7 @@ function BottomIcons() {
         </a>
         <a
           className="option-b option"
-          href="https://wa.me/+8801886556706/?text=What+are+the+delivery+charges?"
+          href="https://wa.me/+923283943011/?text=What+are+the+delivery+charges?"
           target="_blank"
           rel="noopener noreferrer"
         >

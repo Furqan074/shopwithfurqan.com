@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 function Footer() {
   const { t } = useTranslation();
+  // const DOMAIN = import.meta.env.VITE_DOMAIN;
   return (
     <footer>
       <div className="follow">
@@ -159,12 +160,12 @@ function Footer() {
                 +92-328-3943011
               </a>
             </li>
-            <li>
-              {/* TODO test is this working? */}
-              <a href="mailto:contact@shopwithfurqan.com" target="_blank">
-                contact@shopwithfurqan.com
+            {/* TODO test is this working? */}
+            {/* <li>
+              <a href={`mailto:contact@${DOMAIN}`} target="_blank">
+                {`contact@${DOMAIN}`}
               </a>
-            </li>
+            </li> */}
             {/* <li className="address">
               <iframe
                 src="https://www.google.com/maps/embed"

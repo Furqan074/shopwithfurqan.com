@@ -27,7 +27,7 @@ const isAdmin = async (req, res, next) => {
     }
   } catch (error) {
     if (error.message === "invalid token") {
-      console.log("unauthorized or specious request made " + error);
+      console.error("unauthorized or specious request made " + error);
       return res.status(403).json({
         success: false,
         message: "unauthorized request",

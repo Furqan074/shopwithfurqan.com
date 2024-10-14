@@ -4,6 +4,7 @@ import { SideFilterContext } from "../../contexts/SideFilterContext";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import { useState } from "react";
+import Loading from "../../components/Loading";
 
 function SideFilter({
   brands,
@@ -19,6 +20,7 @@ function SideFilter({
   byBrand,
   sortBy,
   collectionName,
+  isLoading,
 }) {
   const { t } = useTranslation();
   const { isSideFilterOpen } = useContext(SideFilterContext);
@@ -45,6 +47,7 @@ function SideFilter({
         <h2>{t("brand_heading")}</h2>
         <div className="line"></div>
         <div className="filter-group">
+          {isLoading && <Loading height={35} width={35} />}
           {brands?.map((brand, index) => (
             <div key={brand + index}>
               <input
@@ -190,6 +193,7 @@ function SideFilter({
         <h2>{t("material_heading")}</h2>
         <div className="line"></div>
         <div className="filter-group">
+          {isLoading && <Loading height={35} width={35} />}
           {materials?.map((material, index) => (
             <div key={material + index}>
               <input
@@ -208,6 +212,7 @@ function SideFilter({
         <h2>{t("categories_label")}</h2>
         <div className="line"></div>
         <div className="filter-group">
+          {isLoading && <Loading height={35} width={35} />}
           {collections?.map((collection, index) => (
             <Link to={`/collection/${collection}`} key={collection + index}>
               {collection}
@@ -233,6 +238,7 @@ SideFilter.propTypes = {
   byBrand: PropTypes.string,
   sortBy: PropTypes.string,
   collectionName: PropTypes.string,
+  isLoading: PropTypes.bool,
 };
 
 export default SideFilter;

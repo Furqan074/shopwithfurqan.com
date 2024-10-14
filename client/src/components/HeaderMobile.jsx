@@ -15,32 +15,39 @@ function HeaderMobile() {
   const { wishCount } = useContext(WishlistContext);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [products, setProducts] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const { t, i18n } = useTranslation();
   const closeSearch = () => {
     setSearchTerm("");
     fetchSuggestions("");
-    setSuggestions([]);
+    setProducts([]);
   };
+
+  const debouncedFetchSuggestions = debounce(async (query) => {
+    setProducts([]);
+    if (!query) {
+      setProducts([]);
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/search?query=${query}`
+      );
+      const data = await response.json();
+      setProducts(data.results);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }, 300);
+
   const fetchSuggestions = useCallback(
-    debounce(async (query) => {
-      if (!query) {
-        setSuggestions([]);
-        return;
-      }
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/search?query=${query}`
-        );
-        const data = await response.json();
-        setSuggestions(data.results);
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-      }
-    }, 300),
-    []
+    (query) => {
+      debouncedFetchSuggestions(query);
+    },
+    [debouncedFetchSuggestions]
   );
+
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchTerm(query);
@@ -82,7 +89,7 @@ function HeaderMobile() {
         <ul>
           <li className="logo">
             <Link to="/">
-              <img src={logo} alt="shopwithfurqan logo" />
+              <img src={logo} alt="Shopwithfurqan logo" />
             </Link>
           </li>
           <li className="lang-selector">
@@ -235,18 +242,18 @@ function HeaderMobile() {
           </svg>
         )}
       </div>
-      {suggestions.length > 0 ? (
+      {products.length > 0 ? (
         <div className="search-results">
           <div
             style={{
               borderBottom: "1px solid rgba(0,0,0,0.6)",
             }}
           >
-            Results: {suggestions.length}
+            Results: {products.length}
           </div>
-          <ProductRow products={suggestions} />
+          <ProductRow products={products} />
         </div>
-      ) : searchTerm && suggestions.length === 0 ? (
+      ) : searchTerm && products.length === 0 ? (
         <div style={{ textAlign: "center" }}>No Items found</div>
       ) : (
         ""

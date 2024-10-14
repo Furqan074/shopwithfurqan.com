@@ -12,7 +12,7 @@ function HomePageCategoriesMobile({ categories }) {
     <Swiper
       className="home-page-categories-mobile"
       spaceBetween={5}
-      slidesPerView={5}
+      slidesPerView={4}
       loop={true}
       modules={[Navigation]}
       navigation
@@ -20,7 +20,7 @@ function HomePageCategoriesMobile({ categories }) {
       {categories.map((category, index) => (
         <SwiperSlide key={index}>
           <Link to={"/collection/" + category.Name}>
-            {i18n.language === "ur" ? category.NameInBn : category.Name}
+            {i18n.language === "ur" ? category.NameInUr : category.Name}
           </Link>
         </SwiperSlide>
       ))}

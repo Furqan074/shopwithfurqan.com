@@ -77,11 +77,12 @@
 .drawer-item a:focus {
   color: #000;
 }
-.item-image {
+.item-media {
   width: 120px;
   height: 140px;
 }
-.item-image img {
+.item-media img,
+.item-media video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -237,7 +238,7 @@ input[type="number"] {
   }
 }
 @media only screen and (max-width: 320px) {
-  .item-image {
+  .item-media {
     height: auto;
   }
   .item-attributes {

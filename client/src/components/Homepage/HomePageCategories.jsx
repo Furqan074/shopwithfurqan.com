@@ -10,14 +10,14 @@ function HomePageCategories({ categories }) {
         {categories.slice(0, 9).map((category, index) => (
           <li key={index}>
             <Link to={"/collection/" + category.Name}>
-              {i18n.language === "ur" ? category.NameInBn : category.Name}
+              {i18n.language === "ur" ? category.NameInUr : category.Name}
             </Link>
             {category.SubCategories.length > 0 && (
               <>
                 <ul>
                   <div>
                     {(i18n.language === "ur"
-                      ? category.SubCategoriesInBn
+                      ? category.SubCategoriesInUr
                       : category.SubCategories
                     ).map((subCategory, index) => (
                       <li key={subCategory + index}>

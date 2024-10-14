@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 const cookies = new Cookies();
 
 function CreateBanner() {
-  document.title = "Create Banner | shopwithfurqan";
+  document.title = "Create Banner | Shopwithfurqan";
   const navigate = useNavigate();
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [base64EncodedMedia, setBase64EncodedMedia] = useState("");
@@ -50,7 +50,6 @@ function CreateBanner() {
       URL.revokeObjectURL(selectedMedia);
       setSelectedMedia(null);
       setBase64EncodedMedia("");
-      setDelayTime("");
       setMediaType("");
     }
   };
@@ -73,7 +72,7 @@ function CreateBanner() {
             media: base64EncodedMedia,
             mediaType,
             link,
-            delayTime: delayTime * 1000,
+            delayTime,
           }),
         }
       );
@@ -139,14 +138,7 @@ function CreateBanner() {
               {selectedMedia && (
                 <div className="relative">
                   {mediaType.includes("video") && (
-                    <video
-                      width="320"
-                      height="240"
-                      controls
-                      onLoadedMetadata={(e) => {
-                        setDelayTime(Math.ceil(e.target.duration));
-                      }}
-                    >
+                    <video width="320" height="240" controls>
                       <source src={selectedMedia} type={mediaType} />
                       Your browser does not support the video tag.
                     </video>

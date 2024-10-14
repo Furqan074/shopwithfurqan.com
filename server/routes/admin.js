@@ -20,7 +20,7 @@ import {
   updateCategory,
   updateOrder,
   updateProduct,
-  getProductReviews,
+  getSingleProduct,
   deleteProductReview,
   createSale,
   updateSale,
@@ -29,7 +29,7 @@ import {
 
 // GET requests
 router.get("/products", getAllProducts);
-router.get("/product/:id", getProductReviews);
+router.get("/product/:id", getSingleProduct);
 router.get("/customers", isAdmin, getAllCustomer);
 router.get("/orders", isAdmin, getAllOrders);
 router.get("/categories", getAllCategories);

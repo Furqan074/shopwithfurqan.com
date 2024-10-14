@@ -50,7 +50,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 export default function ProductsTable() {
-  document.title = "Products | shopwithfurqan";
+  document.title = "Products | Shopwithfurqan";
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState([]);
@@ -66,13 +66,15 @@ export default function ProductsTable() {
     if (currentPage < totalPages.length) setCurrentPage(currentPage + 1);
   };
 
-  const deleteProduct = async (productId, image_ids) => {
+  const deleteProduct = async (productId, media) => {
     const adminToken = cookies.get("adminToken");
     try {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/admin/products?id=${productId}&image_ids=${image_ids}`,
+        }/admin/products?id=${productId}&media=${encodeURIComponent(
+          JSON.stringify(media)
+        )}`,
         {
           method: "DELETE",
           headers: {
@@ -140,7 +142,7 @@ export default function ProductsTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Image</TableHead>
+            <TableHead className="w-[100px]">Media</TableHead>
             <TableHead className="text-center">Name</TableHead>
             <TableHead className="text-center">Price</TableHead>
             <TableHead className="text-center">Stock</TableHead>
@@ -155,11 +157,19 @@ export default function ProductsTable() {
           {products.map((product) => (
             <TableRow key={product._id} className="text-center">
               <TableCell>
-                <img
-                  src={product.Images[0]}
-                  alt="product Image"
-                  className="w-12 h-12"
-                />
+                {product?.Media[0]?.mediaType === "video" && (
+                  <video className="min-w-32" controls autoPlay muted loop>
+                    <source src={product?.Media[0]?.source} />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                {product?.Media[0]?.mediaType === "image" && (
+                  <img
+                    src={product?.Media[0]?.source}
+                    alt="product Media"
+                    className="w-12 h-12"
+                  />
+                )}
               </TableCell>
               <TableCell>{product.Name}</TableCell>
               <TableCell>{product.Price}</TableCell>
@@ -219,7 +229,11 @@ export default function ProductsTable() {
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => {
-                          deleteProduct(product._id, product.ImageIds);
+                          const media = product?.Media?.map((media) => ({
+                            mediaId: media.mediaId,
+                            mediaType: media.mediaType,
+                          }));
+                          deleteProduct(product._id, media);
                         }}
                       >
                         Continue

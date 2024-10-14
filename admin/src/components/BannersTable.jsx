@@ -56,7 +56,7 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
 function BannersTable() {
-  document.title = "Manage Banners | shopwithfurqan";
+  document.title = "Manage Banners | Shopwithfurqan";
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState([]);
@@ -72,13 +72,13 @@ function BannersTable() {
     if (currentPage < totalPages.length) setCurrentPage(currentPage + 1);
   };
 
-  const deleteBanner = async (BannerId, media_id) => {
+  const deleteBanner = async (BannerId, media_id, mediaType) => {
     const adminToken = cookies.get("adminToken");
     try {
       const response = await fetch(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/admin/banners?id=${BannerId}&media_id=${media_id}`,
+        }/admin/banners?id=${BannerId}&media_id=${media_id}&media_type=${mediaType}`,
         {
           method: "DELETE",
           headers: {
@@ -231,7 +231,11 @@ function BannersTable() {
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => {
-                          deleteBanner(banner._id, banner.MediaId);
+                          deleteBanner(
+                            banner._id,
+                            banner.MediaId,
+                            banner.MediaType
+                          );
                         }}
                       >
                         Continue

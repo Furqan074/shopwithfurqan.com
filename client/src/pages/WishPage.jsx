@@ -8,7 +8,7 @@ const cookies = new Cookies();
 
 function WishPage() {
   const { t } = useTranslation();
-  document.title = `${t("wishlist")} | shopwithfurqan`;
+  document.title = `${t("wishlist")} | Shopwithfurqan`;
   const { setWishCount } = useContext(WishlistContext);
   const { openCart } = useContext(CartContext);
   const [wishItems, setWishItems] = useState(
@@ -29,14 +29,14 @@ function WishPage() {
     openCart();
     removeFromWishlist(item.name);
   };
-  // FIXME get OUT the functionality 
+  // FIXME get OUT the functionality in to separate context
 
   const addToCart = (item) => {
     cookies.set(
       "cart" + item.name,
       {
         productName: item.name,
-        productImage: item.image,
+        productMedia: item.media,
         productPrice: item.price,
         productQty: 1,
       },
@@ -66,7 +66,7 @@ function WishPage() {
     <section className="wishlist-section">
       <div className="wishlist-header">
         <div className="wish-heading">
-          <h1>
+          <h1 dir="rtl">
             {t("wishlist")} ({wishItems.length})
           </h1>
         </div>
@@ -84,9 +84,17 @@ function WishPage() {
         <div className="wishlist-body">
           {wishItems.map((item) => (
             <div className="wish-card" key={item.name}>
-              <div className="wish-card-image">
+              <div className="wish-card-media">
                 <Link to={`/products/${item.name}`}>
-                  <img src={item.image} alt={item.name} />
+                  {item?.media?.includes("video") && (
+                    <video autoPlay loop muted>
+                      <source src={item.media} />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                  {item?.media?.includes("image") && (
+                    <img src={item.media} alt={`${item.name} Image`} />
+                  )}
                 </Link>
                 <span
                   className="remove-wishItem-btn"
@@ -120,9 +128,7 @@ function WishPage() {
                   <Link to={`/products/${item.name}`}>{item.name}</Link>
                 </div>
                 <div className="wish-card-prices">
-                  <div className="wish-card-current-price">
-                    PKR {item.price}
-                  </div>
+                  <div className="wish-card-current-price">PKR {item.price}</div>
                   {item.discountedPrice && (
                     <div className="wish-card-previous-price">
                       PKR {item.discountedPrice}

@@ -158,7 +158,7 @@
   transition: all 0.5s ease;
 }
 .popup-wrapper.active {
-  top: 25%;
+  top: 30%;
   opacity: 1;
 }
 .popup {

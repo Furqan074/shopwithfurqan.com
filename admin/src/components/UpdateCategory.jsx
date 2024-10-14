@@ -16,15 +16,15 @@ import { useNavigate, useParams } from "react-router-dom";
 const cookies = new Cookies();
 
 function UpdateCategory() {
-  document.title = "Update Category | shopwithfurqan";
+  document.title = "Update Category | Shopwithfurqan";
   const navigate = useNavigate();
   const { id } = useParams();
   const [selectedImage, setSelectedImage] = useState(null);
   const [base64EncodedImage, setBase64EncodedImage] = useState("");
   const [name, setName] = useState("");
-  const [name_bn, setName_bn] = useState("");
+  const [name_ur, setName_ur] = useState("");
   const [sub_categories, setSub_categories] = useState("");
-  const [sub_categories_bn, setSub_categories_bn] = useState("");
+  const [sub_categories_ur, setSub_categories_ur] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -63,9 +63,9 @@ function UpdateCategory() {
           body: JSON.stringify({
             name,
             image: base64EncodedImage,
-            name_bn,
+            name_ur,
             sub_categories,
-            sub_categories_bn,
+            sub_categories_ur,
           }),
         }
       );
@@ -175,24 +175,24 @@ function UpdateCategory() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="name_bn">Category Name UR</Label>
+            <Label htmlFor="name_ur">Category Name UR</Label>
             <Input
-              id="name_bn"
-              name="name_bn"
+              id="name_ur"
+              name="name_ur"
               placeholder="Enter category name in UR"
-              value={name_bn}
-              onChange={(e) => setName_bn(e.target.value)}
+              value={name_ur}
+              onChange={(e) => setName_ur(e.target.value)}
               autoComplete="true"
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="sub_categories_bn">Sub Categories UR</Label>
+            <Label htmlFor="sub_categories_ur">Sub Categories UR</Label>
             <Input
-              id="sub_categories_bn"
-              name="sub_categories_bn"
+              id="sub_categories_ur"
+              name="sub_categories_ur"
               placeholder="Enter sub categories in UR (optional) (separate them by comma)"
-              value={sub_categories_bn}
-              onChange={(e) => setSub_categories_bn(e.target.value)}
+              value={sub_categories_ur}
+              onChange={(e) => setSub_categories_ur(e.target.value)}
               autoComplete="true"
             />
           </div>

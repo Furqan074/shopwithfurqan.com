@@ -7,7 +7,7 @@ function ResetPass() {
   const { t } = useTranslation();
   const { resetToken } = useParams();
   const navigate = useNavigate();
-  document.title = t("reset_pass_heading") + " | shopwithfurqan";
+  document.title = t("reset_pass_heading") + " | Shopwithfurqan";
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [validationMessage, setValidationMessage] = useState("");

@@ -19,23 +19,29 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, UploadIcon, XIcon } from "lucide-react";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  Loader2,
+  UploadIcon,
+  XIcon,
+} from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 const cookies = new Cookies();
 
 function CreateProduct() {
-  document.title = "Create Product | shopwithfurqan";
+  document.title = "Create Product | Shopwithfurqan";
   const navigate = useNavigate();
-  const [selectedImages, setSelectedImages] = useState([]);
-  const [base64EncodedImages, setBase64EncodedImages] = useState("");
+  const [selectedMedias, setSelectedMedias] = useState([]);
   const [name, setName] = useState("");
   const [name_ur, setName_ur] = useState("");
   const [material, setMaterial] = useState("");
   const [material_ur, setMaterial_ur] = useState("");
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState("");
+  const [shipping, setShipping] = useState("");
   const [ribbon, setRibbon] = useState("");
   const [discountedPrice, setDiscountedPrice] = useState("");
   const [stock, setStock] = useState("");
@@ -47,7 +53,10 @@ function CreateProduct() {
   const [description, setDescription] = useState("");
   const [description_ur, setDescription_ur] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isFilesUploaded, setIsFilesUploaded] = useState(false);
   const { toast } = useToast();
+  const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
   const getAllCategories = useCallback(async () => {
     try {
@@ -83,55 +92,129 @@ function CreateProduct() {
     getAllCategories();
   }, [getAllCategories]);
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const encodedImages = [];
-    const imageUrls = [];
+  const chunkSize = 5 * 1024 * 1024; // 5MB
 
-    if (files.length > 0) {
-      files.forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          encodedImages.push(reader.result);
-          imageUrls.push(URL.createObjectURL(file));
+  const handleMediaChange = async (e) => {
+    const files = e.target.files;
+    const mediaUploaded = [];
 
-          if (encodedImages.length === files.length) {
-            setBase64EncodedImages(encodedImages);
-            setSelectedImages(imageUrls);
+    toast({
+      title: (
+        <div className="flex items-center">
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <span>Uploading files</span>
+        </div>
+      ),
+      description: "Your files are being uploaded...",
+      duration: Infinity,
+    });
+
+    const uploadFile = async (file) => {
+      setIsFilesUploaded(false);
+      const uniqueName = `uuid-${Date.now()}`;
+      const totalChunks = Math.ceil(file.size / chunkSize);
+      const responses = [];
+
+      for (let i = 0; i < totalChunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min((i + 1) * chunkSize, file.size);
+        const response = await uploadChunk(start, end, file, uniqueName);
+        responses.push(response);
+      }
+
+      return responses;
+    };
+
+    const uploadChunk = async (start, end, file, uniqueName) => {
+      const formData = new FormData();
+      formData.append("file", file.slice(start, end));
+      formData.append("cloud_name", CLOUD_NAME);
+      formData.append("upload_preset", UPLOAD_PRESET);
+      const contentRange = `bytes ${start}-${end - 1}/${file.size}`;
+
+      try {
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`,
+          {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-Unique-Upload-Id": uniqueName,
+              "Content-Range": contentRange,
+            },
           }
-        };
-        reader.readAsDataURL(file);
+        );
+        const data = await response.json();
+
+        if (data?.error?.message) {
+          return `error: ${data.error.message}`;
+        }
+
+        if (data.url) {
+          return {
+            source: data.url,
+            mediaType: data.resource_type,
+            mediaId: data.public_id,
+          };
+        }
+      } catch (error) {
+        console.error(`Error uploading file`, error);
+        return `error: ${error.message}`;
+      }
+    };
+
+    let uploadError = undefined;
+
+    for (const file of files) {
+      const responses = await uploadFile(file);
+      for (const response of responses) {
+        if (response) {
+          if (response?.toString().includes("error")) {
+            uploadError = response;
+          }
+          mediaUploaded.push(response);
+        }
+      }
+      setIsFilesUploaded(files.length === mediaUploaded.length);
+    }
+
+    if (!uploadError) {
+      toast({
+        variant: "success",
+        title: "Upload successful 🎉",
+        description: "All files have been uploaded successfully.",
+        duration: 3000,
+      });
+      setSelectedMedias((prev) => [...prev, ...mediaUploaded]);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: uploadError,
+        duration: 3000,
       });
     }
-    setSelectedImages([]);
   };
 
-  const removeImage = (index) => {
-    const newSelectedImages = [...selectedImages];
-    const newBase64EncodedImages = [...base64EncodedImages];
+  const removeMedia = (index) => {
+    const newSelectedMedias = [...selectedMedias];
 
-    URL.revokeObjectURL(newSelectedImages[index]);
-    newSelectedImages.splice(index, 1);
-    newBase64EncodedImages.splice(index, 1);
+    URL.revokeObjectURL(newSelectedMedias[index]);
+    newSelectedMedias.splice(index, 1);
 
-    setSelectedImages(newSelectedImages);
-    setBase64EncodedImages(newBase64EncodedImages);
+    setSelectedMedias(newSelectedMedias);
   };
 
-  const moveImage = (index, direction) => {
-    const newSelectedImages = [...selectedImages];
-    const newBase64EncodedImages = [...base64EncodedImages];
+  const moveMedia = (index, direction) => {
+    const newSelectedMedias = [...selectedMedias];
 
-    const [movedImage] = newSelectedImages.splice(index, 1);
-    const [movedBase64] = newBase64EncodedImages.splice(index, 1);
+    const [movedMedia] = newSelectedMedias.splice(index, 1);
 
     const newIndex = direction === "up" ? index - 1 : index + 1;
 
-    newSelectedImages.splice(newIndex, 0, movedImage);
-    newBase64EncodedImages.splice(newIndex, 0, movedBase64);
+    newSelectedMedias.splice(newIndex, 0, movedMedia);
 
-    setSelectedImages(newSelectedImages);
-    setBase64EncodedImages(newBase64EncodedImages);
+    setSelectedMedias(newSelectedMedias);
   };
 
   const handleCreateProduct = async (event) => {
@@ -149,12 +232,13 @@ function CreateProduct() {
           },
           body: JSON.stringify({
             name: name.trim(),
-            images: base64EncodedImages,
+            medias: selectedMedias,
             name_ur,
             material,
             material_ur,
             brand,
             price,
+            shipping,
             ribbon,
             stock,
             colors,
@@ -174,6 +258,7 @@ function CreateProduct() {
         toast({
           variant: "destructive",
           description: data.message,
+          duration: 5000,
         });
         return;
       } else {
@@ -181,12 +266,14 @@ function CreateProduct() {
           variant: "destructive",
           description:
             "Unexpected Error occur! Product not created, contact your developer if it persists.",
+          duration: 5000,
         });
       }
       if (data.success) {
         toast({
           variant: "success",
           description: "Product Created Successfully!",
+          duration: 5000,
         });
         navigate("/products");
       }
@@ -196,6 +283,7 @@ function CreateProduct() {
         variant: "destructive",
         description:
           "Unexpected Error occur! Product not created, contact your developer if it persists.",
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);
@@ -210,40 +298,51 @@ function CreateProduct() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="image">Product Images</Label>
+            <Label htmlFor="media">
+              Product Medias
+              <span className="text-red-500 ml-1">*</span>
+            </Label>
             <div className="group relative flex h-48 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-muted transition-colors hover:border-primary">
               <input
                 type="file"
-                id="images"
-                accept="images/*"
-                onChange={handleImageChange}
+                id="medias"
+                accept="image/*,video/*"
+                onChange={handleMediaChange}
                 multiple
                 required
                 className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
               />
               <div className="pointer-events-none absolute inset-0 z-0 flex flex-col items-center justify-center gap-2 text-muted-foreground group-hover:text-primary">
                 <UploadIcon className="h-8 w-8" />
-                <p className="text-sm font-medium">Upload Images</p>
+                <p className="text-sm font-medium">Upload Medias</p>
               </div>
             </div>
             <div className="grid gap-4 place-self-center sm:grid-flow-col sm:place-self-start">
-              {selectedImages.map((image, index) => (
+              {selectedMedias.map((media, index) => (
                 <div key={index} className="relative">
-                  <img
-                    src={image}
-                    alt={`Upload Preview ${index}`}
-                    className="h-48 w-48 object-cover rounded-md"
-                  />
+                  {media.mediaType.includes("video") && (
+                    <video width="320" height="240" controls>
+                      <source src={media.source} />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
+                  {media.mediaType.includes("image") && (
+                    <img
+                      src={media.source}
+                      alt={`Upload Preview ${index}`}
+                      className="h-48 w-48 object-cover rounded-md"
+                    />
+                  )}
                   <button
                     type="button"
-                    onClick={() => removeImage(index)}
+                    onClick={() => removeMedia(index)}
                     className="absolute flex items-center justify-center top-1 right-1 bg-red-500 text-white p-1 rounded-full"
                   >
                     <XIcon />
                   </button>
                   <button
                     type="button"
-                    onClick={() => moveImage(index, "up")}
+                    onClick={() => moveMedia(index, "up")}
                     disabled={index === 0}
                     className="absolute bottom-1 left-1 bg-gray-300 text-black p-1 rounded-full"
                   >
@@ -251,10 +350,10 @@ function CreateProduct() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => moveImage(index, "down")}
-                    disabled={index === selectedImages.length - 1}
+                    onClick={() => moveMedia(index, "down")}
+                    disabled={index === selectedMedias.length - 1}
                     style={{
-                      opacity: index === selectedImages.length - 1 ? 0.3 : 1,
+                      opacity: index === selectedMedias.length - 1 ? 0.3 : 1,
                     }}
                     className="absolute bottom-1 right-1 bg-gray-300 text-black p-1 rounded-full"
                   >
@@ -266,7 +365,10 @@ function CreateProduct() {
           </div>
           <div className="grid sm:grid-flow-col gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Product Name</Label>
+              <Label htmlFor="name">
+                Product Name
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <Input
                 id="name"
                 placeholder="Enter Product name"
@@ -276,12 +378,16 @@ function CreateProduct() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="material">Material</Label>
+              <Label htmlFor="material">
+                Material
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <Input
                 id="material"
                 placeholder="Enter Material"
                 value={material}
                 onChange={(e) => setMaterial(e.target.value)}
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -294,10 +400,13 @@ function CreateProduct() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="price">
+                Price
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <div className="flex flex-row">
-                <span className="bg-slate-300 flex justify-center items-center px-1 text-2xl">
-                  ₨
+                <span className="bg-slate-300 flex justify-center px-1 text-3xl">
+                  PKR
                 </span>
                 <Input
                   className="rounded-l-none border-l-0"
@@ -310,6 +419,29 @@ function CreateProduct() {
                   required
                 />
               </div>
+            </div>
+            <div className="grid gap-2">
+              <Label>
+                Shipping Fee
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
+              <Select
+                onValueChange={(value) => {
+                  setShipping(value);
+                }}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Shipping Fee" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Shipping Fee</SelectLabel>
+                    <SelectItem value="false">Free</SelectItem>
+                    <SelectItem value="true">Not Free</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label>Ribbon</Label>
@@ -334,15 +466,19 @@ function CreateProduct() {
           <div className="grid sm:grid-flow-col gap-4">
             {ribbon === "sale" && (
               <div className="grid gap-2">
-                <Label htmlFor="discountedPrice">Discounted Price</Label>
+                <Label htmlFor="discountedPrice">
+                  Discounted Price
+                  <span className="text-red-500 ml-1">*</span>
+                </Label>
                 <div className="flex flex-row">
-                  <span className="bg-slate-300 flex justify-center items-center px-1 text-2xl">
-                    ₨
+                  <span className="bg-slate-300 flex justify-center px-1 text-3xl">
+                    PKR
                   </span>
                   <Input
                     className="rounded-l-none border-l-0"
                     id="discountedPrice"
                     type="number"
+                    min={1}
                     placeholder="Enter Discounted Price"
                     value={discountedPrice}
                     onChange={(e) => setDiscountedPrice(e.target.value)}
@@ -352,7 +488,10 @@ function CreateProduct() {
               </div>
             )}
             <div className="grid gap-2">
-              <Label htmlFor="stock">Stock</Label>
+              <Label htmlFor="stock">
+                Stock
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <Input
                 id="stock"
                 type="number"
@@ -360,6 +499,7 @@ function CreateProduct() {
                 placeholder="Enter Stock quantity"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -381,7 +521,10 @@ function CreateProduct() {
               />
             </div>
             <div className="grid gap-2">
-              <Label>List Section</Label>
+              <Label>
+                List Section
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <Select
                 onValueChange={(value) => {
                   setListedSection(value);
@@ -394,16 +537,19 @@ function CreateProduct() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>List Section</SelectLabel>
-                    <SelectItem value="Today">Today</SelectItem>
-                    <SelectItem value="BestSelling">Best Selling</SelectItem>
-                    <SelectItem value="Explore">Explore</SelectItem>
+                    <SelectItem value="today">Today</SelectItem>
+                    <SelectItem value="bestselling">Best Selling</SelectItem>
+                    <SelectItem value="explore">Explore</SelectItem>
                     <SelectItem value="NewArrival">New Arrival</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Collection</Label>
+              <Label>
+                Collection
+                <span className="text-red-500 ml-1">*</span>
+              </Label>
               <Select
                 onValueChange={(value) => {
                   setCollection(value);
@@ -427,7 +573,10 @@ function CreateProduct() {
             </div>
           </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">
+              Description
+              <span className="text-red-500 ml-1">*</span>
+            </Label>
             <Textarea
               placeholder="Enter Product Description."
               id="description"
@@ -474,16 +623,18 @@ function CreateProduct() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit">
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save"
-            )}
-          </Button>
+          {isFilesUploaded && (
+            <Button type="submit">
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          )}
         </CardFooter>
       </Card>
     </form>

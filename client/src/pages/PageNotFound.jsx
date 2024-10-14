@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 function PageNotFound() {
   const { t } = useTranslation();
-  document.title = `${t("not_found_heading")} | shopwithfurqan`;
+  document.title = `${t("not_found_heading")} | Shopwithfurqan`;
   return (
     <section className="pageNotFound-section">
       <h1>{t("not_found_heading")}</h1>

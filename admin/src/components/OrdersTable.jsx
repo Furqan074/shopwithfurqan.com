@@ -55,13 +55,14 @@ import { Link } from "react-router-dom";
 const cookies = new Cookies();
 
 export default function OrdersTable() {
-  document.title = "Manage Orders | shopwithfurqan";
+  document.title = "Manage Orders | Shopwithfurqan";
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const { toast } = useToast();
+  const DOMAIN = import.meta.env.VITE_DOMAIN;
 
   const goToPrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -183,7 +184,7 @@ export default function OrdersTable() {
                         <div>
                           <div>
                             <a
-                              href={`https://shopwithfurqan.com/${item.name}`}
+                              href={`https://${DOMAIN}/${item.name}`}
                               target="_blank"
                               className="text-blue-700"
                             >
@@ -261,7 +262,7 @@ export default function OrdersTable() {
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         This action cannot be undone. This will permanently
-                        delete the category data.
+                        delete the order.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
