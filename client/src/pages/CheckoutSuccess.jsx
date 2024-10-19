@@ -7,6 +7,7 @@ import successAnimation from "../assets/images/success-animation.gif";
 const cookies = new Cookies();
 
 function CheckoutSuccess() {
+  document.title = "Thank you for your purchase | Shopwithfurqan";
   const [isCheckoutSuccess, setCheckoutSuccess] = useState(false);
 
   useEffect(() => {

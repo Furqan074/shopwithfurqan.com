@@ -20,29 +20,39 @@ function Drawer() {
   };
 
   const calculateTotalPrice = (items) => {
+    let shipping = 0;
     const total = items.reduce((acc, item) => {
-      return acc + item.productPrice * item.productQty;
+      item.productShippingFee > 0 ? (shipping = item.productShippingFee) : 0;
+      return acc + item?.productPrice * item?.productQty;
     }, 0);
-    setTotalPrice(total);
+    if (total > 3000) {
+      shipping = 0;
+    }
+    console.log(shipping);
+
+    setTotalPrice(total + shipping);
   };
 
-  const handleRemoveItem = (productName) => {
-    cookies.remove("cart" + productName, { path: "/" });
+  const handleRemoveItem = (cookieName) => {
+    cookies.remove(cookieName, {
+      path: "/",
+    });
     loadCartItems();
   };
 
-  const handleQtyChange = (productName, newQty) => {
+  const handleQtyChange = (cookieName, newQty) => {
     if (newQty < 1) return;
 
     const updatedProducts = products.map((item) =>
-      item.productName === productName ? { ...item, productQty: newQty } : item
+      item.cookieName === cookieName ? { ...item, productQty: newQty } : item
     );
     setProducts(updatedProducts);
 
-    const cartItem = cookies.get("cart" + productName);
+    const cartItem = cookies.get(cookieName);
+
     if (cartItem) {
       cartItem.productQty = newQty;
-      cookies.set("cart" + productName, cartItem, {
+      cookies.set(cookieName, cartItem, {
         maxAge: 172800,
         path: "/",
       });
@@ -90,7 +100,7 @@ function Drawer() {
         ) : (
           <div id="drawer-item-wrapper">
             {products.map((item) => (
-              <div className="drawer-item" key={item.productName}>
+              <div className="drawer-item" key={item.cookieName}>
                 <div className="item-media">
                   <Link to={`/products/${item.productName}`}>
                     {item?.productMedia?.includes("video") && (
@@ -113,8 +123,11 @@ function Drawer() {
                       <span>{item.productName}</span>
                     </Link>
                   </div>
-                  <div className="item-price">
-                    <span>PKR {item.productPrice}</span>
+                  <div className="item-size">
+                    <span>{item.productColor}</span>
+                  </div>
+                  <div className="item-color">
+                    <span>{item.productSize}</span>
                   </div>
                   <div className="item-actions">
                     <div className="item-quantity-counter">
@@ -122,7 +135,7 @@ function Drawer() {
                         className="qty qty-minus"
                         type="button"
                         onClick={() =>
-                          handleQtyChange(item.productName, item.productQty - 1)
+                          handleQtyChange(item.cookieName, item.productQty - 1)
                         }
                       >
                         &minus;
@@ -135,7 +148,7 @@ function Drawer() {
                         inputMode="numeric"
                         onChange={(e) =>
                           handleQtyChange(
-                            item.productName,
+                            item.cookieName,
                             parseInt(e.target.value)
                           )
                         }
@@ -144,20 +157,25 @@ function Drawer() {
                         className="qty qty-plus"
                         type="button"
                         onClick={() =>
-                          handleQtyChange(item.productName, item.productQty + 1)
+                          handleQtyChange(item.cookieName, item.productQty + 1)
                         }
                       >
                         &#43;
                       </button>
                     </div>
-                    <div className="remove-item-button">
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveItem(item.productName)}
-                      >
-                        {t("remove")}
-                      </button>
-                    </div>
+                  </div>
+                </div>
+                <div className="item-divider">
+                  <div className="item-price">
+                    <span>৳{item.productPrice}</span>
+                  </div>
+                  <div className="remove-item-button">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(item.cookieName)}
+                    >
+                      {t("remove")}
+                    </button>
                   </div>
                 </div>
               </div>

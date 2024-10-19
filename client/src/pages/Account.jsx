@@ -20,6 +20,7 @@ function Account() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [isPopupActive, setPopupActive] = useState(false);
   const [popupValidation, setPopupValidation] = useState("");
+  const [welcomeName, setWelcomeName] = useState("");
   useEffect(() => {
     const token = cookies.get("token");
     if (token) {
@@ -31,6 +32,7 @@ function Account() {
       setLastName(names[1] || "");
       setPhone(token.customerPhone || "");
       setAddress(token.customerAddress || "");
+      setWelcomeName(names[0] || "");
     } else {
       setIsAuthorized(false);
     }
@@ -95,6 +97,7 @@ function Account() {
 
       if (data.success) {
         setPopupActive(true);
+        setWelcomeName(firstName);
         setPopupValidation({
           type: "success",
           message: "Data Updated Successfully!",
@@ -134,7 +137,7 @@ function Account() {
             </div>
           </div>
           <h1>
-            {t("welcome")} <span>{firstName}</span>
+            {t("welcome")} <span>{welcomeName}</span>
           </h1>
           <div className="user-info">
             <div className="user-nav">

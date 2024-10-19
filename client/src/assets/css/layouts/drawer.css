@@ -22,7 +22,7 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: 28%;
   z-index: 999;
   background-color: #fff;
   color: #000;
@@ -91,10 +91,17 @@
 .item-attributes {
   display: flex;
   flex-direction: column;
-  width: 51%;
   gap: 10px;
-  text-transform: uppercase;
+  text-transform: capitalize;
   font-size: 0.92em;
+  justify-content: space-between;
+}
+.item-divider {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 20px;
+  height: inherit;
 }
 .item-name {
   font-size: 1.2em;
@@ -103,7 +110,7 @@
   font-weight: 600;
 }
 .item-actions {
-  margin-top: 15px;
+  margin-top: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -242,7 +249,11 @@ input[type="number"] {
     height: auto;
   }
   .item-attributes {
-    width: 70%;
+    width: 45%;
+    gap: 4px;
+  }
+  .item-divider {
+    margin-left: 0px;
   }
   .checkout-button {
     font-size: 1em;

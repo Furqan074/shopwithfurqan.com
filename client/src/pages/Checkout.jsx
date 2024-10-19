@@ -224,7 +224,7 @@ function Checkout() {
         <div className="order_summary">
           <div className="order-summary-items">
             {checkoutProducts?.map((item) => (
-              <div className="item" key={item?.productName}>
+              <div className="item" key={item?.cookieName}>
                 <Link to={`/products/${item?.productName}`}>
                   {item?.productMedia.includes("video") && (
                     <video autoPlay loop muted>
@@ -239,11 +239,15 @@ function Checkout() {
                     />
                   )}
                 </Link>{" "}
-                <Link to={`/products/${item?.productName}`}>
-                  {item?.productName}
-                </Link>
-                <span>{item?.productQty}</span>
-                <span>PKR {item?.productPrice}</span>
+                <div className="item-info">
+                  <Link to={`/products/${item?.productName}`}>
+                    {item?.productName}
+                  </Link>
+                  <span>{item?.productQty}</span>
+                  <span>{item?.productSize}</span>
+                  <span>{item?.productColor}</span>
+                  <span>৳{item?.productPrice}</span>
+                </div>
               </div>
             ))}
           </div>

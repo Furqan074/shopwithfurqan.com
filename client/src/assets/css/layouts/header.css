@@ -158,7 +158,10 @@ header .wish-page,
 }
 
 .account-dropdown-authorized:hover > svg {
-  fill: var(--primary-color);
+  fill: rgb(0, 0, 0, 0.3);
+}
+.account-dropdown-authorized > svg path {
+  fill: none;
 }
 .account-dropdown {
   position: absolute;
@@ -243,7 +246,7 @@ header .wish-page,
     display: none;
   }
   .account-dropdown-authorized > svg {
-    fill: var(--primary-color);
+    fill: rgb(0, 0, 0, 0.6);
   }
   .account-dropdown {
     top: 30px;

@@ -76,6 +76,12 @@
 .checkout-section .order-summary-items .item a {
   color: #000;
 }
+.checkout-section .order-summary-items .item-info {
+  text-transform: capitalize;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 .checkout-section .order_summary .underline {
   display: flex;
   justify-content: space-between;

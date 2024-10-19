@@ -547,10 +547,13 @@ export const checkout = async (req, res) => {
         size: item.productSize,
         qty: item.productQty,
         price: foundProduct.DiscountedPrice || foundProduct.Price,
+        productShippingFee:
+          item.productShippingFee > 0 ? item.productShippingFee : 0,
       };
     });
-
+    let shipping = 0;
     const totalAmount = orderedItems.reduce((total, item) => {
+      item.productShippingFee > 0 ? (shipping = item.productShippingFee) : 0;
       return total + item.price * item.qty;
     }, 0);
 
@@ -563,7 +566,7 @@ export const checkout = async (req, res) => {
       customerPhone: phone,
       deliveryAddress: address,
       orderedItems: orderedItems,
-      totalAmount: totalAmount,
+      totalAmount: totalAmount + shipping,
     });
 
     await newOrder.save();

@@ -121,14 +121,14 @@ function Orders() {
                         <span>PKR {order.totalAmount}</span>
                         <span className="order-action">
                           <a
-                            href={`https://wa.me/+8801886556706/?text=Track+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
+                            href={`https://wa.me/+923283943011/?text=Track+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
                             target="_blank"
                           >
                             {t("track_order")}
                           </a>
                           |
                           <a
-                            href={`https://wa.me/+8801886556706/?text=Cancel+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
+                            href={`https://wa.me/+923283943011/?text=Cancel+My+Order%0AOrder+No:+${order.orderId}%0AName:+${customerName}%0AEmail:+${customerEmail}`}
                             target="_blank"
                           >
                             {t("cancel")}

@@ -130,7 +130,7 @@ function Footer() {
             </li>
           </ul>
         </div>
-        <div className="policies">
+        {/* <div className="policies">
           <div>{t("footer_policies_heading")}</div>
           <ul>
             <li>
@@ -148,7 +148,7 @@ function Footer() {
               <a href="/faqs.html">{t("faqs")}</a>
             </li>
           </ul>
-        </div>
+        </div> */}
         <div className="contact">
           <div>{t("footer_Get_In_Touch_heading")}</div>
           <ul>

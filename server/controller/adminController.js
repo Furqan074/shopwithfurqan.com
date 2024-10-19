@@ -407,9 +407,14 @@ export const createBanner = async (req, res) => {
       upload_preset: UPLOAD_PRESET,
     });
 
+    const url = cloudinary.url(uploadResponse.public_id, {
+      secure: true,
+      resource_type: resourceType,
+    });
+
     const newBanner = new Banners({
       Name: name,
-      Media: uploadResponse.url,
+      Media: url,
       MediaType: mediaType,
       MediaId: uploadResponse.public_id,
       SlideDelay: delayTime,

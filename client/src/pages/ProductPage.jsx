@@ -96,8 +96,9 @@ function ProductPage() {
     setSizeWarning("");
     setColorWarning("");
     setShippingWarning("");
+    const cookieName = "cart" + product.Name + selectedSize + selectedColor;
     cookies.set(
-      "cart" + product.Name,
+      cookieName,
       {
         productName: product.Name,
         productMedia: product.Media[0].source,
@@ -106,6 +107,7 @@ function ProductPage() {
         productSize: selectedSize,
         productColor: selectedColor,
         productShippingFee: Number(selectedShipping),
+        cookieName,
       },
       {
         maxAge: 172800, // 2 days
@@ -138,8 +140,9 @@ function ProductPage() {
     setSizeWarning("");
     setColorWarning("");
     setShippingWarning("");
+    const cookieName = "cart" + product.Name + selectedSize + selectedColor;
     cookies.set(
-      "cart" + product.Name,
+      cookieName,
       {
         productName: product.Name,
         productMedia: product.Media[0].source,
@@ -148,6 +151,7 @@ function ProductPage() {
         productSize: selectedSize,
         productColor: selectedColor,
         productShippingFee: Number(selectedShipping),
+        cookieName,
       },
       {
         maxAge: 172800, // 2 days
@@ -355,9 +359,9 @@ function ProductPage() {
             <>
               <div
                 className={`shipping ${
-                  selectedShipping === "100" ? "selected" : ""
+                  selectedShipping === "150" ? "selected" : ""
                 }`}
-                onClick={() => setSelectedShipping("100")}
+                onClick={() => setSelectedShipping("150")}
               >
                 <svg
                   width="40"
@@ -420,9 +424,9 @@ function ProductPage() {
               </div>
               <div
                 className={`shipping ${
-                  selectedShipping === "150" ? "selected" : ""
+                  selectedShipping === "250" ? "selected" : ""
                 }`}
-                onClick={() => setSelectedShipping("150")}
+                onClick={() => setSelectedShipping("250")}
               >
                 <svg
                   width="40"

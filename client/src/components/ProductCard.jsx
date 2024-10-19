@@ -46,13 +46,18 @@ function ProductCard({ product }) {
   };
 
   const handleAddToCartItem = () => {
+    const cookieName =
+      "cart" + product.Name + product?.Sizes[0] + product?.Colors[0];
     cookies.set(
-      "cart" + product.Name,
+      cookieName,
       {
         productName: product.Name,
-        productMedia: product.Media[0]?.source,
-        productPrice: product.Price,
+        productMedia: product.Media[0].source,
+        productPrice: product?.DiscountedPrice || product.Price,
         productQty: 1,
+        productSize: product?.Sizes[0],
+        productColor: product?.Colors[0],
+        cookieName,
       },
       {
         maxAge: 172800, // 2 days
@@ -130,7 +135,9 @@ function ProductCard({ product }) {
             PKR {product.DiscountedPrice || product.Price}
           </div>
           {product.DiscountedPrice > 0 && (
-            <div className="product-card-previous-price">PKR {product.Price}</div>
+            <div className="product-card-previous-price">
+              PKR {product.Price}
+            </div>
           )}
         </div>
         {product?.RatingQty > 0 && (
