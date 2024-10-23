@@ -31,14 +31,17 @@ function WishPage() {
   };
   // FIXME get OUT the functionality in to separate context
 
+  const sanitize = (str) => str.replace(/[^\w-]/g, "-");
   const addToCart = (item) => {
+    const cookieName = sanitize("cart" + item.name);
     cookies.set(
-      "cart" + item.name,
+      cookieName,
       {
         productName: item.name,
         productMedia: item.media,
         productPrice: item.price,
         productQty: 1,
+        cookieName,
       },
       {
         maxAge: 172800, // 2 days
@@ -128,7 +131,9 @@ function WishPage() {
                   <Link to={`/products/${item.name}`}>{item.name}</Link>
                 </div>
                 <div className="wish-card-prices">
-                  <div className="wish-card-current-price">PKR {item.price}</div>
+                  <div className="wish-card-current-price">
+                    PKR {item.price}
+                  </div>
                   {item.discountedPrice && (
                     <div className="wish-card-previous-price">
                       PKR {item.discountedPrice}

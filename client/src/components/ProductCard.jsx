@@ -46,8 +46,10 @@ function ProductCard({ product }) {
   };
 
   const handleAddToCartItem = () => {
-    const cookieName =
-      "cart" + product.Name + product?.Sizes[0] + product?.Colors[0];
+    const sanitize = (str) => str.replace(/[^\w-]/g, "-");
+    const cookieName = sanitize(
+      "cart" + product.Name + product?.Sizes[0] + product?.Colors[0]
+    );
     cookies.set(
       cookieName,
       {

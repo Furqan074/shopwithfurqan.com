@@ -96,7 +96,10 @@ function ProductPage() {
     setSizeWarning("");
     setColorWarning("");
     setShippingWarning("");
-    const cookieName = "cart" + product.Name + selectedSize + selectedColor;
+    const sanitize = (str) => str.replace(/[^\w-]/g, "-");
+    const cookieName = sanitize(
+      "cart" + product.Name + selectedSize + selectedColor
+    );
     cookies.set(
       cookieName,
       {
@@ -140,7 +143,10 @@ function ProductPage() {
     setSizeWarning("");
     setColorWarning("");
     setShippingWarning("");
-    const cookieName = "cart" + product.Name + selectedSize + selectedColor;
+    const sanitize = (str) => str.replace(/[^\w-]/g, "-");
+    const cookieName = sanitize(
+      "cart" + product.Name + selectedSize + selectedColor
+    );
     cookies.set(
       cookieName,
       {
