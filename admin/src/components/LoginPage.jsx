@@ -36,13 +36,9 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      if (response.status === 401) {
-        setValidationMessage(data.message);
-        return;
-      } else {
-        setValidationMessage("");
-      }
-      if (response.status === 400) {
+      const errorCodes = [401, 400, 403, 404, 500];
+
+      if (errorCodes.includes(response.status)) {
         setValidationMessage(data.message);
         return;
       } else {

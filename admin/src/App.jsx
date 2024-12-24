@@ -27,6 +27,7 @@ const PageNotFound = () => {
   );
 };
 import { Toaster } from "@/components/ui/toaster";
+import { Analytics } from "@vercel/analytics/react";
 import Cookies from "universal-cookie";
 const cookies = new Cookies();
 
@@ -78,6 +79,7 @@ function App() {
       ) : (
         <LoginPage />
       )}
+      <Analytics />
     </>
   );
 }
