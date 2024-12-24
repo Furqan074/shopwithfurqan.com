@@ -28,8 +28,6 @@ function Drawer() {
     if (total > 3000) {
       shipping = 0;
     }
-    console.log(shipping);
-
     setTotalPrice(total + shipping);
   };
 
