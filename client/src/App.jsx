@@ -26,34 +26,40 @@ import Checkout from "./pages/Checkout.jsx";
 import ResetPass from "./pages/ResetPass.jsx";
 import { useRef } from "react";
 import CheckoutSuccess from "./pages/CheckoutSuccess.jsx";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   const loadingBarRef = useRef(null);
   return (
-    <Router>
-      <TopLoadingBar color="#db4444" ref={loadingBarRef} />
-      <ScrollToTopAndLoader loadingBarRef={loadingBarRef} />
-      {isBrowser || isTablet ? <Header /> : <HeaderMobile />}
-      <Drawer />
-      <BreadCrumbs />
-      <Routes>
-        <Route path="/" Component={HomePage} />
-        <Route path="/login" Component={SignIn} />
-        <Route path="/register" Component={SignUp} />
-        <Route path="/recover" Component={RecoverAccount} />
-        <Route path="/reset/:resetToken" Component={ResetPass} />
-        <Route path="/wishlist" Component={WishPage} />
-        <Route path="/checkout" Component={Checkout} />
-        <Route path="/confirmation" Component={CheckoutSuccess} />
-        <Route path="/profile" Component={Account} />
-        <Route path="/orders" Component={Orders} />
-        <Route path="/products/:name" Component={ProductPage} />
-        <Route path="/collection/:name" Component={CollectionPage} />
-        <Route path="*" Component={PageNotFound} />
-      </Routes>
-      <BottomIcons />
-      <Footer />
-    </Router>
+    <>
+      <Router>
+        <TopLoadingBar color="#db4444" ref={loadingBarRef} />
+        <ScrollToTopAndLoader loadingBarRef={loadingBarRef} />
+        {isBrowser || isTablet ? <Header /> : <HeaderMobile />}
+        <Drawer />
+        <BreadCrumbs />
+        <Routes>
+          <Route path="/" Component={HomePage} />
+          <Route path="/login" Component={SignIn} />
+          <Route path="/register" Component={SignUp} />
+          <Route path="/recover" Component={RecoverAccount} />
+          <Route path="/reset/:resetToken" Component={ResetPass} />
+          <Route path="/wishlist" Component={WishPage} />
+          <Route path="/checkout" Component={Checkout} />
+          <Route path="/confirmation" Component={CheckoutSuccess} />
+          <Route path="/profile" Component={Account} />
+          <Route path="/orders" Component={Orders} />
+          <Route path="/products/:name" Component={ProductPage} />
+          <Route path="/collection/:name" Component={CollectionPage} />
+          <Route path="*" Component={PageNotFound} />
+        </Routes>
+        <BottomIcons />
+        <Footer />
+      </Router>
+      <Analytics />
+      <SpeedInsights />
+    </>
   );
 }
 
