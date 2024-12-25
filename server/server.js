@@ -6,8 +6,8 @@ import helmet from "helmet";
 import mongoose from "mongoose";
 const URI =
   process.env.NODE_ENV === "production"
-    ? process.env.MongoDB_URI
-    : process.env.MongoDB_LOCAL_URI;
+    ? process.env.MONGODB_URI
+    : process.env.MONGODB_LOCAL_URI;
 mongoose.connect(URI);
 const PORT = process.env.PORT || 3000;
 const DOMAIN = process.env.DOMAIN;

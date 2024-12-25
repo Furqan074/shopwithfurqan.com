@@ -9,6 +9,8 @@ import FlashSale from "../modals/flashsale.js";
 const JWT_SECRET = process.env.JWT_SECRET;
 const UPLOAD_PRESET = process.env.CLOUDINARY_UPLOAD_PRESET;
 const DOMAIN = process.env.DOMAIN;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 export const adminLogin = async (req, res) => {
   try {
@@ -19,10 +21,7 @@ export const adminLogin = async (req, res) => {
         message: "Email, Password are required",
       });
     }
-    if (
-      email !== process.env.admin_Email ||
-      password !== process.env.admin_Password
-    ) {
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
       return res.status(401).json({
         success: false,
         message: "Access request denied because of wrong credentials",
@@ -30,8 +29,8 @@ export const adminLogin = async (req, res) => {
     }
     const adminToken = jwt.sign(
       {
-        adminEmail: process.env.admin_Email,
-        adminPassword: process.env.admin_Password,
+        adminEmail: ADMIN_EMAIL,
+        adminPassword: ADMIN_PASSWORD,
       },
       JWT_SECRET,
       { expiresIn: "1h" }
@@ -55,9 +54,9 @@ export const adminLogin = async (req, res) => {
       success: true,
     });
   } catch (err) {
-    console.error("unknown error happen admin login " + err);
+    console.error("unknown error happened during admin login: ", err);
     res.status(500).json({
-      message: `unknown error happen admin login ${err}`,
+      message: `unknown error happened during admin login: ${err}`,
     });
   }
 };

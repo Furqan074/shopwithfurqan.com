@@ -1,5 +1,8 @@
 import jwt from "jsonwebtoken";
+
 const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const isAdmin = async (req, res, next) => {
   try {
@@ -14,20 +17,19 @@ const isAdmin = async (req, res, next) => {
 
     const decodedToken = jwt.verify(token, JWT_SECRET);
 
-    if (
-      decodedToken.adminEmail === process.env.admin_Email &&
-      decodedToken.adminPassword === process.env.admin_Password
-    ) {
-      next();
-    } else {
+    const { adminEmail, adminPassword } = decodedToken;
+
+    if (adminEmail !== ADMIN_EMAIL && adminPassword !== ADMIN_PASSWORD) {
       return res.status(403).json({
         success: false,
         message: "unauthorized request",
       });
     }
+
+    next();
   } catch (error) {
     if (error.message === "invalid token") {
-      console.error("unauthorized or specious request made " + error);
+      console.error("unauthorized or specious request: ", error);
       return res.status(403).json({
         success: false,
         message: "unauthorized request",
