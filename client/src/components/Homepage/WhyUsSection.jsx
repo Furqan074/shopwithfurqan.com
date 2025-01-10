@@ -69,7 +69,7 @@ function WhyUsSection() {
         </div>
         <div className="text">
           <div>{t("FREE_AND_FAST_DELIVERY")}</div>
-          <span>{t("Free_delivery_1000")}</span>
+          <span>{t("Free_delivery_1500")}</span>
         </div>
       </div>
       <div className="services">

@@ -25,7 +25,7 @@ function Drawer() {
       item.productShippingFee > 0 ? (shipping = item.productShippingFee) : 0;
       return acc + item?.productPrice * item?.productQty;
     }, 0);
-    if (total > 1000) {
+    if (total > 1500) {
       shipping = 0;
     }
     setTotalPrice(total + shipping);
