@@ -246,7 +246,7 @@ function Checkout() {
                   <span>{item?.productQty}</span>
                   <span>{item?.productSize}</span>
                   <span>{item?.productColor}</span>
-                  <span>৳{item?.productPrice}</span>
+                  <span>PKR {item?.productPrice}</span>
                 </div>
               </div>
             ))}

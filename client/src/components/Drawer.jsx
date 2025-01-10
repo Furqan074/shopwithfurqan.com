@@ -165,7 +165,7 @@ function Drawer() {
                 </div>
                 <div className="item-divider">
                   <div className="item-price">
-                    <span>৳{item.productPrice}</span>
+                    <span>PKR {item.productPrice}</span>
                   </div>
                   <div className="remove-item-button">
                     <button
