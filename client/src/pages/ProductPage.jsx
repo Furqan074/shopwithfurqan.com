@@ -576,11 +576,14 @@ function ProductPage() {
             </div>
           )}
           <div className="product-desc">
-            <span>
-              {i18n.language === "ur"
-                ? product.DescriptionInUr
-                : product.Description}
-            </span>
+            <span
+              dangerouslySetInnerHTML={{
+                __html:
+                  i18n.language === "ur"
+                    ? product.DescriptionInUr
+                    : product.Description,
+              }}
+            ></span>
           </div>
         </div>
       </div>

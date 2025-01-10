@@ -29,6 +29,7 @@ import {
 import { useState, useCallback, useEffect } from "react";
 import Cookies from "universal-cookie";
 import { useNavigate } from "react-router-dom";
+import Tiptap from "./Tiptap";
 const cookies = new Cookies();
 
 function CreateProduct() {
@@ -577,49 +578,38 @@ function CreateProduct() {
               Description
               <span className="text-red-500 ml-1">*</span>
             </Label>
-            <Textarea
-              placeholder="Enter Product Description."
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
+            <Tiptap value={description} setValue={setDescription} />
           </div>
         </CardContent>
       </Card>
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>Product Info In UR (Optional)</CardTitle>
+          <CardTitle>Product Info In Urdu (Optional)</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid sm:grid-flow-col gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="name_ur">Product Name UR</Label>
+              <Label htmlFor="name_ur">Product Name Urdu</Label>
               <Input
                 id="name_ur"
-                placeholder="Enter Product name in UR"
+                placeholder="Enter Product name in Urdu"
                 value={name_ur}
                 onChange={(e) => setName_ur(e.target.value)}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="material_ur">Material UR</Label>
+              <Label htmlFor="material_ur">Material Urdu</Label>
               <Input
                 id="material_ur"
-                placeholder="Enter Material in UR"
+                placeholder="Enter Material in Urdu"
                 value={material_ur}
                 onChange={(e) => setMaterial_ur(e.target.value)}
               />
             </div>
           </div>
           <div className="grid w-full gap-1.5">
-            <Label htmlFor="description_ur">Description Ur</Label>
-            <Textarea
-              placeholder="Enter Product Description in Ur."
-              id="description_ur"
-              value={description_ur}
-              onChange={(e) => setDescription_ur(e.target.value)}
-            />
+            <Label htmlFor="description_ur">Description in Urdu</Label>
+            <Tiptap value={description_ur} setValue={setDescription_ur} />
           </div>
         </CardContent>
         <CardFooter>

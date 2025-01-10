@@ -72,3 +72,13 @@
     margin: 0;
   }
 }
+.ProseMirror {
+  min-height: 150px;
+  outline: none;
+}
+.ProseMirror li::marker {
+  color: #000;
+}
+.prose :where(p):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin: 0;
+}

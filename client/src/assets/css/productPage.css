@@ -14,6 +14,17 @@
   flex-direction: column;
   gap: 5px;
 }
+.product-page-section .product-details s {
+  text-decoration: line-through;
+}
+.product-page-section .product-details ul,
+.product-page-section .product-details ol {
+  margin-left: 20px;
+}
+.product-page-section .product-details ul[dir="rtl"] {
+  margin-right: 20px;
+}
+
 .product-page-section .product-details h1 {
   text-transform: uppercase;
   font-weight: 500;
