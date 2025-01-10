@@ -575,17 +575,17 @@ function ProductPage() {
               <span>{t("Free_Delivery_label")}</span>
             </div>
           )}
-          <div className="product-desc">
-            <span
-              dangerouslySetInnerHTML={{
-                __html:
-                  i18n.language === "ur"
-                    ? product.DescriptionInUr
-                    : product.Description,
-              }}
-            ></span>
-          </div>
         </div>
+      </div>
+      <div className="product-desc">
+        <span
+          dangerouslySetInnerHTML={{
+            __html:
+              i18n.language === "ur"
+                ? product.DescriptionInUr
+                : product.Description,
+          }}
+        ></span>
       </div>
       {product?.AverageRating > 0 && (
         <ReviewsSection
