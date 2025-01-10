@@ -60,11 +60,11 @@ function CreateCategory() {
             Authorization: `Bearer ${adminToken.token}`,
           },
           body: JSON.stringify({
-            name,
+            name: name.trim(),
             image: base64EncodedImage,
-            name_ur,
-            sub_categories,
-            sub_categories_ur,
+            name_ur: name_ur.trim(),
+            sub_categories: sub_categories.trim(),
+            sub_categories_ur: sub_categories_ur.trim(),
           }),
         }
       );
