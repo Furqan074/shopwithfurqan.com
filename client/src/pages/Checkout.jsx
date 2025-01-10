@@ -95,7 +95,7 @@ function Checkout() {
       setShippingFee(shipping);
       return acc + item?.productPrice * item?.productQty;
     }, 0);
-    if (total > 3000) {
+    if (total > 1000) {
       shipping = 0;
       setShippingFee(0);
     }
