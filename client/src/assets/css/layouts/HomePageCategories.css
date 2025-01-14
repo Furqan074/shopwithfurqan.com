@@ -67,6 +67,17 @@
   font-size: 0.8em;
   padding: 0px 8px;
 }
+.home-page-categories-mobile .swiper-slide select {
+  border: none;
+  background: transparent;
+}
+.home-page-categories-mobile .swiper-slide option {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.home-page-categories-mobile .swiper-slide option:nth-child(1) {
+  font-weight: 200;
+}
 .home-page-categories-mobile .swiper-slide:nth-child(1) {
   margin-left: 35px;
 }
