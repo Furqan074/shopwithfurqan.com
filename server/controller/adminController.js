@@ -224,6 +224,7 @@ export const createCategory = async (req, res) => {
     });
 
     const url = cloudinary.url(uploadResponse.public_id, {
+      secure: true,
       transformation: [
         { fetch_format: "auto", quality: "100" },
         {
