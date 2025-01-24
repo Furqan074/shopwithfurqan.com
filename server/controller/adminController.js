@@ -307,8 +307,11 @@ export const updateCategory = async (req, res) => {
       uploadResponse = await cloudinary.uploader.upload(image, {
         upload_preset: UPLOAD_PRESET,
       });
+      const url = cloudinary.url(uploadResponse.public_id, {
+        secure: true,
+      });
 
-      categoryFound.Image = uploadResponse.url;
+      categoryFound.Image = url;
       categoryFound.ImageId = uploadResponse.public_id;
     }
 
