@@ -606,36 +606,37 @@ export const createProduct = async (req, res) => {
         message: "Product Name in Ur already exists",
       });
     }
-
     const transformedMedia = medias.map((media) => {
-      const transformationOptions =
-        media.mediaType === "image"
-          ? [{ fetch_format: "auto", quality: "60" }]
-          : [{ quality: "60" }];
+      if (media.source.includes("cloudinary")) {
+        const transformationOptions =
+          media.mediaType === "image"
+            ? [{ fetch_format: "auto", quality: "60" }]
+            : [{ quality: "60" }];
 
-      const url = cloudinary.url(media.mediaId, {
-        transformation: transformationOptions,
-        resource_type: media.mediaType,
-        secure: true,
-      });
+        const url = cloudinary.url(media.mediaId, {
+          transformation: transformationOptions,
+          resource_type: media.mediaType,
+          secure: true,
+        });
 
-      return {
-        source: url,
-        mediaType: media.mediaType,
-        mediaId: media.mediaId,
-      };
-    });
-
-    const newProduct = new Products({
-      Name: name,
-      NameInUr: name_ur || name,
-      Media: transformedMedia.map((media) => {
+        return {
+          source: url,
+          mediaType: media.mediaType,
+          mediaId: media.mediaId,
+        };
+      } else {
         return {
           source: media.source,
           mediaType: media.mediaType,
           mediaId: media.mediaId,
         };
-      }),
+      }
+    });
+
+    const newProduct = new Products({
+      Name: name,
+      NameInUr: name_ur || name,
+      Media: transformedMedia,
       Material: material,
       MaterialInUr: material_ur || material,
       Brand: brand,
@@ -643,7 +644,9 @@ export const createProduct = async (req, res) => {
       Shipping: shipping,
       Ribbon: ribbon,
       DiscountedPrice: discountedPrice,
-      DiscountPercentage: Math.ceil(((price - discountedPrice) / price) * 100),
+      DiscountPercentage: discountedPrice
+        ? Math.ceil(((price - discountedPrice) / price) * 100)
+        : 0,
       Stock: stock,
       Colors: colors?.split(",").map((item) => item.trim()),
       Sizes: sizes?.split(",").map((item) => item.trim()),
