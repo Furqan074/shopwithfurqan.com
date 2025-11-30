@@ -53,6 +53,7 @@ const productSchema = new mongoose.Schema(
     },
     DiscountPercentage: {
       type: Number,
+      default: 0,
     },
     Ribbon: {
       type: String,
