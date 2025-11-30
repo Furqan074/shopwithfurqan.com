@@ -41,10 +41,10 @@ function CreateProduct() {
   const [material, setMaterial] = useState("");
   const [material_ur, setMaterial_ur] = useState("");
   const [brand, setBrand] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(0);
   const [shipping, setShipping] = useState("");
   const [ribbon, setRibbon] = useState("");
-  const [discountedPrice, setDiscountedPrice] = useState("");
+  const [discountedPrice, setDiscountedPrice] = useState(0);
   const [stock, setStock] = useState("");
   const [colors, setColors] = useState("");
   const [sizes, setSizes] = useState("");
