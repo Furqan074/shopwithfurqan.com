@@ -4,10 +4,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import mongoose from "mongoose";
-const URI =
-  process.env.NODE_ENV === "production"
-    ? process.env.MONGODB_URI
-    : process.env.MONGODB_LOCAL_URI;
+const isProduction = process.env.NODE_ENV === "production";
+const URI = isProduction
+  ? process.env.MONGODB_URI
+  : process.env.MONGODB_LOCAL_URI;
 mongoose.connect(URI);
 const PORT = process.env.PORT || 3000;
 const DOMAIN = process.env.DOMAIN;
@@ -17,20 +17,23 @@ import adminRouter from "./routes/admin.js";
 app.use(cookieParser());
 app.use(helmet());
 
+const corsOrigins = {
+  local: [
+    "http://localhost:5173",
+    "http://localhost:3030",
+    "http://localhost:4173",
+    "http://localhost:4174",
+  ],
+  production: [
+    `https://${DOMAIN}`,
+    `https://www.${DOMAIN}`,
+    `https://admin.${DOMAIN}`,
+  ],
+};
+
 app.use(
   cors({
-    origin: [
-      // local Development
-      "http://localhost:5173",
-      "http://localhost:3030",
-      // local Builds
-      "http://localhost:4173",
-      "http://localhost:4174",
-      // Production Sites
-      `https://${DOMAIN}`,
-      `https://www.${DOMAIN}`,
-      `https://admin.${DOMAIN}`,
-    ],
+    origin: isProduction ? corsOrigins.production : corsOrigins.local,
     credentials: true,
   })
 );
