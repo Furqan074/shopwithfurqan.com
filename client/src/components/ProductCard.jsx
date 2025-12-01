@@ -9,7 +9,6 @@ const cookies = new Cookies();
 
 function ProductCard({ product }) {
   const { t } = useTranslation();
-  const [media, setMedia] = useState(product?.Media[0]?.source);
   const { openCart } = useContext(CartContext);
   const { setWishCount } = useContext(WishlistContext);
   const [isHovered, setIsHovered] = useState(false);
@@ -71,18 +70,20 @@ function ProductCard({ product }) {
     openCart();
   };
 
+  const handleMouseOver = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseOut = () => {
+    setIsHovered(false);
+  };
+
   return (
     <div className="product-card">
       <div
         className="product-card-media"
-        onMouseOver={() => {
-          setMedia(product.Media[1]?.source || product.Media[0]?.source);
-          setIsHovered(true);
-        }}
-        onMouseOut={() => {
-          setMedia(product.Media[0]?.source);
-          setIsHovered(false);
-        }}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
       >
         {product.Ribbon === "sale" && (
           <span className="product-card-ribbon sale">
@@ -93,14 +94,56 @@ function ProductCard({ product }) {
           <span className="product-card-ribbon new">{t("ribbon_new")}</span>
         )}
         <Link to={`/products/${product.Name}`}>
-          {media?.includes("video") ? (
-            <video autoPlay loop muted>
-              <source src={media} />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <img src={media} alt={`${product.Name} Image`} />
-          )}
+          <div className="media-wrapper">
+            <div
+              className="product-media"
+              style={{ opacity: !isHovered ? 1 : 0 }}
+            >
+              {product?.Media[0]?.source?.includes("video") ? (
+                <video autoPlay loop muted>
+                  <source src={product?.Media[0]?.source} />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img
+                  src={product?.Media[0]?.source}
+                  alt={`${product.Name} Image`}
+                />
+              )}
+            </div>
+            {product.Media[1] ? (
+              <div
+                className="product-media"
+                style={{ opacity: isHovered ? 1 : 0 }}
+              >
+                {product?.Media[1]?.source?.includes("video") ? (
+                  <video autoPlay loop muted>
+                    <source src={product?.Media[1]?.source} />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <img
+                    src={product?.Media[1]?.source}
+                    alt={`${product.Name} Image`}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="product-media">
+                {product?.Media[0]?.source?.includes("video") ? (
+                  <video autoPlay loop muted>
+                    <source src={product?.Media[0]?.source} />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <img
+                    src={product?.Media[0]?.source}
+                    alt={`${product.Name} Image`}
+                  />
+                )}
+              </div>
+            )}
+          </div>
         </Link>
         <span
           className="product-card-heart-icon"
