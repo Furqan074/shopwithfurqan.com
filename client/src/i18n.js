@@ -1,6 +1,7 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+const copyRightYear = new Date().getFullYear();
 
 i18n
   .use(LanguageDetector)
@@ -45,7 +46,7 @@ i18n
           customer_support: "Friendly 24/7 customer support",
           money_back: "We return money within 30 days",
           follow_us: "Follow us",
-          Copyright: "Copyright © Shopwithfurqan 2024. All right reserved",
+          Copyright: `Copyright © Shopwithfurqan ${copyRightYear}. All right reserved`,
           footer_menu_heading: "Menu",
           footer_policies_heading: "Policies",
           footer_Get_In_Touch_heading: "Get In Touch",
@@ -172,7 +173,7 @@ i18n
           customer_support: "دوستانہ 24/7 کسٹمر سپورٹ",
           money_back: "ہم 30 دن کے اندر رقم واپس کرتے ہیں",
           follow_us: "ہمیں فالو کریں",
-          Copyright: "کاپی رائٹ © Shopwithfurqan 2024. تمام حقوق محفوظ ہیں",
+          Copyright: `کاپی رائٹ © Shopwithfurqan ${copyRightYear}. تمام حقوق محفوظ ہیں`,
           footer_menu_heading: "مینو",
           footer_policies_heading: "پالیسیاں",
           footer_Get_In_Touch_heading: "رابطہ کریں",
