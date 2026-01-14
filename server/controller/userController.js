@@ -112,6 +112,7 @@ export const recover = async (req, res) => {
       <p style="font-weight: 600">
         You have requested to reset your password. To continue,
       </p>
+      // TODO add domain here; fix and test in production environment
       <a href="http://localhost:5173/reset/${resetToken}">
         <button
           style="
@@ -195,6 +196,12 @@ export const reset = async (req, res) => {
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    if (password.length < 6 || password.length > 10) {
+      return res.status(403).json({
+        success: false,
+        message: "Password should only be 6 to 10 characters long",
+      });
+    }
     if (!email || !name || !password) {
       return res.status(400).json({
         success: false,
@@ -586,12 +593,13 @@ export const checkout = async (req, res) => {
         );
       })
     );
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const { data, error } = await resend.emails.send({
-      from: `Shopwithfurqan <orders@${DOMAIN}>`,
-      to: email,
-      subject: "🎉 Your Order Has Been Successfully Placed!",
-      html: `<main style="font-family: Arial, Helvetica, sans-serif">
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const { data, error } = await resend.emails.send({
+        from: `Shopwithfurqan <orders@${DOMAIN}>`,
+        to: email,
+        subject: "🎉 Your Order Has Been Successfully Placed!",
+        html: `<main style="font-family: Arial, Helvetica, sans-serif">
       <h1>Order Received Successfully</h1>
       <h2 style="text-transform: capitalize;">Hi ${name},</h2>
       <p style="font-weight: 600; font-size: 1.2em; color: #000; opacity: 0.6;">
@@ -617,11 +625,13 @@ export const checkout = async (req, res) => {
         <strong style="font-weight: 800">Note:</strong> It is necessary that you login with the email you gave at the Checkout.
       </p>
     </main>`,
-    });
-    if (error) {
-      console.error("error sending email:");
-      console.error(error);
+      });
+      if (error) {
+        console.error("error sending email:");
+        console.error(error);
+      }
     }
+
     return res.status(200).json({
       success: true,
       message: "Order Placed Successfully!",

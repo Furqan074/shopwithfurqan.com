@@ -23,8 +23,10 @@ function SignUp() {
     } else {
       setEmailValidationMessage("");
     }
-    if (password.length < 6) {
-      setPasswordValidationMessage("Password should be 6 characters long");
+    if (password.length < 6 || password.length > 10) {
+      setPasswordValidationMessage(
+        `Password should be 6 to 10 characters long current length is ${password.length}`
+      );
       return;
     } else {
       setPasswordValidationMessage("");
