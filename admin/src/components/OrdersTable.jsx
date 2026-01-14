@@ -184,7 +184,7 @@ export default function OrdersTable() {
                         <div>
                           <div>
                             <a
-                              href={`https://${DOMAIN}/${item.name}`}
+                              href={`https://${DOMAIN}/products/${item.name}`}
                               target="_blank"
                               className="text-blue-700"
                             >
