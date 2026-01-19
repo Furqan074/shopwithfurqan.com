@@ -29,7 +29,7 @@ export const login = async (req, res) => {
 
     const isValidPassword = await bcrypt.compare(
       password,
-      existingCustomer.Password
+      existingCustomer.Password,
     );
 
     if (!isValidPassword) {
@@ -44,7 +44,7 @@ export const login = async (req, res) => {
         customerId: existingCustomer.id,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     res.cookie(
@@ -61,7 +61,7 @@ export const login = async (req, res) => {
         sameSite: "Strict",
         domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
-      }
+      },
     );
 
     return res.status(201).json({
@@ -112,8 +112,7 @@ export const recover = async (req, res) => {
       <p style="font-weight: 600">
         You have requested to reset your password. To continue,
       </p>
-      // TODO add domain here; fix and test in production environment
-      <a href="http://localhost:5173/reset/${resetToken}">
+      <a href="http://${DOMAIN}/reset/${resetToken}">
         <button
           style="
             border: none;
@@ -233,7 +232,7 @@ export const register = async (req, res) => {
         customerId: newCustomer.id,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     // save info in cookies
@@ -252,7 +251,7 @@ export const register = async (req, res) => {
         sameSite: "Strict",
         domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
-      }
+      },
     );
 
     return res.status(201).json({
@@ -309,7 +308,7 @@ export const profile = async (req, res) => {
     if (oldPassword) {
       const isValidPassword = await bcrypt.compare(
         oldPassword,
-        existingCustomer.Password
+        existingCustomer.Password,
       );
       if (!isValidPassword) {
         return res.status(404).json({
@@ -339,7 +338,7 @@ export const profile = async (req, res) => {
         customerId: existingCustomer.id,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     // Save info in cookies
@@ -357,7 +356,7 @@ export const profile = async (req, res) => {
         sameSite: "Strict",
         domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
-      }
+      },
     );
 
     return res.status(201).json({
@@ -393,7 +392,7 @@ export const getSingleProduct = async (req, res) => {
       _id: { $ne: productFound._id },
     });
     const sortedReviews = productFound.Reviews.sort(
-      (a, b) => b.Rating - a.Rating
+      (a, b) => b.Rating - a.Rating,
     );
     res.status(200).json({
       success: true,
@@ -455,7 +454,7 @@ export const getCollectionProducts = async (req, res) => {
 
     if (material !== "null") {
       query.Material = decodeURIComponent(
-        material.replace(/%%20/g, "__PERCENT__")
+        material.replace(/%%20/g, "__PERCENT__"),
       ).replace(/__PERCENT__/g, "% ");
     }
 
@@ -520,7 +519,7 @@ export const getCollectionProducts = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "Error occurred during getting collection of products: " + error
+      "Error occurred during getting collection of products: " + error,
     );
     res.status(500).json({
       message: "Unknown error occurred while retrieving products.",
@@ -581,7 +580,7 @@ export const checkout = async (req, res) => {
     await Promise.all(
       items.map(async (item) => {
         const foundProduct = itemsFound.find(
-          (p) => p.Name === item.productName
+          (p) => p.Name === item.productName,
         );
         if (!foundProduct) {
           throw new Error(`Product ${item.productName} not found`);
@@ -589,9 +588,9 @@ export const checkout = async (req, res) => {
         foundProduct.Stock -= item.productQty;
         await Products.updateOne(
           { _id: foundProduct._id },
-          { Stock: foundProduct.Stock }
+          { Stock: foundProduct.Stock },
         );
-      })
+      }),
     );
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
