@@ -33,7 +33,7 @@ export const adminLogin = async (req, res) => {
         adminPassword: ADMIN_PASSWORD,
       },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     // save info in cookies
@@ -47,7 +47,7 @@ export const adminLogin = async (req, res) => {
         sameSite: "Strict",
         domain: process.env.NODE_ENV === "production" ? DOMAIN : "",
         maxAge: 3600000, // 1 hour in milliseconds
-      }
+      },
     );
 
     return res.status(201).json({
@@ -57,6 +57,66 @@ export const adminLogin = async (req, res) => {
     console.error("unknown error happened during admin login: ", err);
     res.status(500).json({
       message: `unknown error happened during admin login: ${err}`,
+    });
+  }
+};
+
+export const Dashboard = async (req, res) => {
+  try {
+    const days = 90;
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    const getOrdersData = await Orders.aggregate([
+      {
+        $match: {
+          orderStatus: "Delivered",
+          createdAt: { $gte: cutoffDate },
+        },
+      },
+      {
+        $project: {
+          orderDate: {
+            $dateTrunc: {
+              date: "$createdAt",
+              unit: "day",
+            },
+          },
+          totalAmount: 1,
+        },
+      },
+      {
+        $group: {
+          _id: "$orderDate",
+          ordersCount: { $sum: 1 },
+          totalAmount: { $sum: "$totalAmount" },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$_id",
+            },
+          },
+          money: "$totalAmount",
+          orders: "$ordersCount",
+        },
+      },
+      { $sort: { date: 1 } },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: getOrdersData,
+    });
+  } catch (error) {
+    console.error("Dashboard aggregation error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
     });
   }
 };
@@ -99,7 +159,7 @@ export const updateOrder = async (req, res) => {
   } catch (error) {
     console.error(
       "Unexpected Error occurred during updating the Order:",
-      error
+      error,
     );
     return res.status(400).json({
       success: false,
@@ -175,7 +235,7 @@ const fix_subCategories = (en_sub_categories, ur_sub_categories) => {
 
   if (difference_length > 0) {
     const additionalCategories = en_sub_categories.slice(
-      en_sub_categories.length - difference_length
+      en_sub_categories.length - difference_length,
     );
     ur_sub_categories.push(...additionalCategories);
   }
@@ -216,7 +276,7 @@ export const createCategory = async (req, res) => {
 
     const fixed_sub_categories = fix_subCategories(
       en_sub_categories,
-      ur_sub_categories
+      ur_sub_categories,
     );
 
     const uploadResponse = await cloudinary.uploader.upload(image, {
@@ -254,7 +314,7 @@ export const createCategory = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "Unexpected Error occurred during the creation of category: "
+      "Unexpected Error occurred during the creation of category: ",
     );
     console.error(error);
     return res.status(400).json({
@@ -298,7 +358,7 @@ export const updateCategory = async (req, res) => {
 
     const fixed_sub_categories = fix_subCategories(
       en_sub_categories,
-      ur_sub_categories
+      ur_sub_categories,
     );
 
     let uploadResponse = null;
@@ -331,7 +391,7 @@ export const updateCategory = async (req, res) => {
   } catch (error) {
     console.error(
       "Unexpected Error occurred during updating the Category:",
-      error
+      error,
     );
     return res.status(400).json({
       success: false,
@@ -586,7 +646,7 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: `The following fields are required: ${missingFields.join(
-          ", "
+          ", ",
         )}.`,
       });
     }
@@ -743,7 +803,7 @@ export const updateProduct = async (req, res) => {
       const updatedMediaIds = new Set(medias.map((media) => media.mediaId));
 
       const mediaToDelete = productFound.Media.filter(
-        (media) => !updatedMediaIds.has(media.mediaId)
+        (media) => !updatedMediaIds.has(media.mediaId),
       );
 
       const deletionPromises = mediaToDelete.map(async (media) => {
@@ -920,7 +980,7 @@ export const deleteProductReview = async (req, res) => {
     }
 
     productFound.Reviews = productFound.Reviews.filter(
-      (review) => review._id.toString() !== reviewId
+      (review) => review._id.toString() !== reviewId,
     );
 
     await productFound.save();
@@ -1019,7 +1079,7 @@ export const createSale = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "Unexpected Error occurred during the creation of Sale: " + error
+      "Unexpected Error occurred during the creation of Sale: " + error,
     );
     return res.status(400).json({
       success: false,
@@ -1052,7 +1112,7 @@ export const updateSale = async (req, res) => {
     });
   } catch (error) {
     console.error(
-      "Unexpected Error occurred during Updating the Sale: " + error
+      "Unexpected Error occurred during Updating the Sale: " + error,
     );
     return res.status(400).json({
       success: false,

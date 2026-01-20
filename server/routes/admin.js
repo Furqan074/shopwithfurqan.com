@@ -25,9 +25,11 @@ import {
   createSale,
   updateSale,
   getFlashSale,
+  Dashboard,
 } from "../controller/adminController.js";
 
 // GET requests
+router.get("/", Dashboard);
 router.get("/products", getAllProducts);
 router.get("/product/:id", getSingleProduct);
 router.get("/customers", isAdmin, getAllCustomer);
