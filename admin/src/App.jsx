@@ -14,6 +14,8 @@ import CreateBanner from "./components/CreateBanner";
 import UpdateBanner from "./components/UpdateBanner";
 import LoginPage from "./components/LoginPage";
 import CreateSale from "./components/CreateSale";
+import DashboardChart from "./components/Dashboard";
+
 const PageNotFound = () => {
   document.title = "404 page not found | Shopwithfurqan";
   return (
@@ -58,6 +60,7 @@ function App() {
           <Toaster />
           <main className="flex-1 justify-center p-4">
             <Routes>
+              <Route path="/" Component={DashboardChart} />
               <Route path="/orders" Component={OrdersTable} />
               <Route path="/orders/update/:id" Component={UpdateOrder} />
               <Route path="/products" Component={ProductsTable} />

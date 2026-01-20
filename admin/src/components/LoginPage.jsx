@@ -45,7 +45,7 @@ export default function LoginPage() {
         setValidationMessage("");
       }
       if (data.success) {
-        window.location.href = "/orders";
+        window.location.href = "/";
       }
     } catch (error) {
       console.error("Error registering user:", error);

@@ -9,6 +9,7 @@ import {
   GalleryHorizontalEnd,
   Group,
   CirclePercent,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,17 @@ function Header() {
             >
               <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
               <span className="sr-only">Shopwithfurqan</span>
+            </NavLink>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `flex items-center gap-4 px-2.5 ${
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                }  hover:text-foreground`
+              }
+            >
+              <LayoutDashboard className="h-5 w-5" />
+              Dashboard
             </NavLink>
             <NavLink
               to="/orders"
